@@ -15,7 +15,7 @@
 }
 
 .btn-add {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
   color: white;
   border: none;
   padding: 0.8rem 1.5rem;
@@ -38,7 +38,7 @@
 }
 
 .form-container h3 {
-  color: #667eea;
+  color: #f59e0b;
   margin-bottom: 1.5rem;
 }
 
@@ -74,7 +74,7 @@
 .form-group textarea:focus,
 .form-group select:focus {
   outline: none;
-  border-color: #667eea;
+  border-color: #f59e0b;
 }
 
 .form-actions {
@@ -84,7 +84,7 @@
 }
 
 .btn-submit {
-  background: #667eea;
+  background: #f59e0b;
   color: white;
   border: none;
   padding: 0.8rem 2rem;
@@ -95,7 +95,7 @@
 }
 
 .btn-submit:hover {
-  background: #5568d3;
+  background: #d97706;
 }
 
 .btn-cancel {
@@ -127,7 +127,7 @@
 }
 
 .tasks-table thead {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
   color: white;
 }
 
@@ -199,9 +199,9 @@
 /* Nút hoàn thành */
 .btn-complete {
   padding: 0.5rem 0.8rem;
-  border: 2px solid #4caf50;
+  border: 2px solid #f59e0b;
   background: white;
-  color: #4caf50;
+  color: #f59e0b;
   border-radius: 50%;
   cursor: pointer;
   margin-right: 0.5rem;
@@ -215,15 +215,15 @@
 }
 
 .btn-complete:hover {
-  background: #4caf50;
+  background: #f59e0b;
   color: white;
   transform: scale(1.1);
 }
 
 .btn-complete.completed {
-  background: #4caf50;
+  background: #f59e0b;
   color: white;
-  border-color: #4caf50;
+  border-color: #f59e0b;
 }
 
 .btn-edit,
@@ -238,12 +238,12 @@
 }
 
 .btn-edit {
-  background: #2196f3;
+  background: #f59e0b;
   color: white;
 }
 
 .btn-edit:hover {
-  background: #1976d2;
+  background: #d97706;
   transform: translateY(-2px);
 }
 
@@ -269,3 +269,5 @@
     grid-template-columns: 1fr;
   }
 }
+
+

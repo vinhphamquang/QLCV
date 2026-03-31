@@ -15,7 +15,7 @@
 }
 
 .btn-add {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
   color: white;
   border: none;
   padding: 0.8rem 1.5rem;
@@ -27,18 +27,20 @@
 
 .btn-add:hover {
   transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);
 }
 
 .form-container {
   background: white;
   padding: 2rem;
   border-radius: 10px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 10px rgba(245, 158, 11, 0.2);
   margin-bottom: 2rem;
+  border: 2px solid #fbbf24;
 }
 
 .form-container h3 {
-  color: #667eea;
+  color: #f59e0b;
   margin-bottom: 1.5rem;
 }
 
@@ -66,7 +68,7 @@
 .form-group input:focus,
 .form-group textarea:focus {
   outline: none;
-  border-color: #667eea;
+  border-color: #f59e0b;
 }
 
 .form-actions {
@@ -76,18 +78,19 @@
 }
 
 .btn-submit {
-  background: #667eea;
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
   color: white;
   border: none;
   padding: 0.8rem 2rem;
   border-radius: 5px;
   font-size: 1rem;
   cursor: pointer;
-  transition: background 0.3s;
+  transition: all 0.3s;
 }
 
 .btn-submit:hover {
-  background: #5568d3;
+  background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);
 }
 
 .btn-cancel {
@@ -108,8 +111,9 @@
 .table-container {
   background: white;
   border-radius: 10px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 10px rgba(245, 158, 11, 0.2);
   overflow-x: auto;
+  border: 2px solid #fbbf24;
 }
 
 .teacher-table {
@@ -118,7 +122,7 @@
 }
 
 .teacher-table thead {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
   color: white;
 }
 
@@ -149,12 +153,12 @@
 }
 
 .btn-edit {
-  background: #4caf50;
+  background: #f59e0b;
   color: white;
 }
 
 .btn-edit:hover {
-  background: #45a049;
+  background: #d97706;
   transform: translateY(-2px);
 }
 
@@ -174,3 +178,5 @@
   color: #999;
   font-size: 1.1rem;
 }
+
+

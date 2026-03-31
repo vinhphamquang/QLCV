@@ -177,12 +177,12 @@
 }
 
 .btn-edit {
-  background: #4caf50;
+  background: #f59e0b;
   color: white;
 }
 
 .btn-edit:hover {
-  background: #45a049;
+  background: #d97706;
   transform: translateY(-2px);
 }
 
@@ -208,3 +208,4 @@
     grid-template-columns: 1fr;
   }
 }
+
