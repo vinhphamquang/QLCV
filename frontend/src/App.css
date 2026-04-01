@@ -6,7 +6,7 @@
 
 .App {
   min-height: 100vh;
-  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 50%, #fbbf24 100%);
+  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 50%, #bfdbfe 100%);
   display: flex;
 }
 

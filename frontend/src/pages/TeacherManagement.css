@@ -10,12 +10,12 @@
 }
 
 .header-section h2 {
-  color: #333;
+  color: #2563eb;
   font-size: 2rem;
 }
 
 .btn-add {
-  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
   color: white;
   border: none;
   padding: 0.8rem 1.5rem;
@@ -27,20 +27,20 @@
 
 .btn-add:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
 }
 
 .form-container {
   background: white;
   padding: 2rem;
   border-radius: 10px;
-  box-shadow: 0 2px 10px rgba(245, 158, 11, 0.2);
+  box-shadow: 0 2px 10px rgba(37, 99, 235, 0.2);
   margin-bottom: 2rem;
-  border: 2px solid #fbbf24;
+  border: 2px solid #3b82f6;
 }
 
 .form-container h3 {
-  color: #f59e0b;
+  color: #2563eb;
   margin-bottom: 1.5rem;
 }
 
@@ -68,7 +68,7 @@
 .form-group input:focus,
 .form-group textarea:focus {
   outline: none;
-  border-color: #f59e0b;
+  border-color: #2563eb;
 }
 
 .form-actions {
@@ -78,7 +78,7 @@
 }
 
 .btn-submit {
-  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
   color: white;
   border: none;
   padding: 0.8rem 2rem;
@@ -89,8 +89,8 @@
 }
 
 .btn-submit:hover {
-  background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
-  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);
+  background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
 }
 
 .btn-cancel {
@@ -111,9 +111,9 @@
 .table-container {
   background: white;
   border-radius: 10px;
-  box-shadow: 0 2px 10px rgba(245, 158, 11, 0.2);
+  box-shadow: 0 2px 10px rgba(37, 99, 235, 0.2);
   overflow-x: auto;
-  border: 2px solid #fbbf24;
+  border: 2px solid #3b82f6;
 }
 
 .teacher-table {
@@ -122,7 +122,7 @@
 }
 
 .teacher-table thead {
-  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
   color: white;
 }
 
@@ -153,12 +153,12 @@
 }
 
 .btn-edit {
-  background: #f59e0b;
+  background: #2563eb;
   color: white;
 }
 
 .btn-edit:hover {
-  background: #d97706;
+  background: #1e40af;
   transform: translateY(-2px);
 }
 
@@ -178,5 +178,7 @@
   color: #999;
   font-size: 1.1rem;
 }
+
+
 
 

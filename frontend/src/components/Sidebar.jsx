@@ -1,34 +1,73 @@
 import { Link, useLocation } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import './Sidebar.css';
 
 function Sidebar() {
   const location = useLocation();
   const [openMenu, setOpenMenu] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const toggleMenu = (menu) => {
     setOpenMenu(openMenu === menu ? null : menu);
   };
 
+  const handleSearch = (e) => {
+    if (e) e.preventDefault();
+    // Tự động mở các menu khi tìm kiếm
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      if (query.includes('kiểm tra') || query.includes('kiem tra')) {
+        setOpenMenu('kiemtra');
+      } else if (query.includes('công việc') || query.includes('cong viec') || query.includes('tuần') || query.includes('tháng')) {
+        setOpenMenu('congviec');
+      }
+    }
+  };
+
+  // Tự động tìm kiếm khi người dùng gõ
+  useEffect(() => {
+    if (searchQuery.trim()) {
+      handleSearch();
+    } else {
+      setOpenMenu(null);
+    }
+  }, [searchQuery]);
+
   const isActive = (path) => {
     return location.pathname === path ? 'active' : '';
+  };
+
+  const highlightText = (text) => {
+    if (!searchQuery.trim()) return false;
+    return text.toLowerCase().includes(searchQuery.toLowerCase());
   };
 
   return (
     <aside className="sidebar">
       <div className="sidebar-header">
         <Link to="/" className="sidebar-logo">
-          <h2>🏫 Quản Lý Trường</h2>
+          <img src="/logo.png" alt="Logo Trường THCS Trần Phú" className="sidebar-logo-img" />
+          <h2>Quản Lý Trường</h2>
         </Link>
       </div>
 
+      <form className="sidebar-search" onSubmit={handleSearch}>
+        <input
+          type="text"
+          className="sidebar-search-input"
+          placeholder="🔍 Tìm kiếm..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+      </form>
+
       <nav className="sidebar-nav">
-        <Link to="/" className={`sidebar-item ${isActive('/')}`}>
+        <Link to="/" className={`sidebar-item ${isActive('/')} ${highlightText('Trang Chủ') ? 'highlight' : ''}`}>
           <span className="sidebar-icon">🏠</span>
           <span className="sidebar-text">Trang Chủ</span>
         </Link>
 
-        <Link to="/quan-ly-giao-vien" className={`sidebar-item ${isActive('/quan-ly-giao-vien')}`}>
+        <Link to="/quan-ly-giao-vien" className={`sidebar-item ${isActive('/quan-ly-giao-vien')} ${highlightText('Quản Lý Giáo Viên') ? 'highlight' : ''}`}>
           <span className="sidebar-icon">👨‍🏫</span>
           <span className="sidebar-text">Quản Lý Giáo Viên</span>
         </Link>
@@ -36,7 +75,7 @@ function Sidebar() {
         {/* Công Tác Kiểm Tra */}
         <div className="sidebar-group">
           <button 
-            className={`sidebar-item ${openMenu === 'kiemtra' ? 'open' : ''}`}
+            className={`sidebar-item ${openMenu === 'kiemtra' ? 'open' : ''} ${highlightText('Công Tác Kiểm Tra') ? 'highlight' : ''}`}
             onClick={() => toggleMenu('kiemtra')}
           >
             <span className="sidebar-icon">📋</span>
@@ -45,11 +84,11 @@ function Sidebar() {
           </button>
           {openMenu === 'kiemtra' && (
             <div className="sidebar-submenu">
-              <Link to="/kiem-tra-noi-bo" className={`sidebar-subitem ${isActive('/kiem-tra-noi-bo')}`}>
+              <Link to="/kiem-tra-noi-bo" className={`sidebar-subitem ${isActive('/kiem-tra-noi-bo')} ${highlightText('Kiểm Tra Nội Bộ') ? 'highlight' : ''}`}>
                 <span className="sidebar-icon">📋</span>
                 <span className="sidebar-text">Kiểm Tra Nội Bộ</span>
               </Link>
-              <Link to="/kiem-tra-cac-ky" className={`sidebar-subitem ${isActive('/kiem-tra-cac-ky')}`}>
+              <Link to="/kiem-tra-cac-ky" className={`sidebar-subitem ${isActive('/kiem-tra-cac-ky')} ${highlightText('Kiểm Tra Các Kỳ') ? 'highlight' : ''}`}>
                 <span className="sidebar-icon">📝</span>
                 <span className="sidebar-text">Kiểm Tra Các Kỳ</span>
               </Link>
@@ -60,7 +99,7 @@ function Sidebar() {
         {/* Công Việc */}
         <div className="sidebar-group">
           <button 
-            className={`sidebar-item ${openMenu === 'congviec' ? 'open' : ''}`}
+            className={`sidebar-item ${openMenu === 'congviec' ? 'open' : ''} ${highlightText('Công Việc') ? 'highlight' : ''}`}
             onClick={() => toggleMenu('congviec')}
           >
             <span className="sidebar-icon">📅</span>
@@ -69,11 +108,11 @@ function Sidebar() {
           </button>
           {openMenu === 'congviec' && (
             <div className="sidebar-submenu">
-              <Link to="/cong-viec-tuan" className={`sidebar-subitem ${isActive('/cong-viec-tuan')}`}>
+              <Link to="/cong-viec-tuan" className={`sidebar-subitem ${isActive('/cong-viec-tuan')} ${highlightText('Công Việc Tuần') || highlightText('tuần') ? 'highlight' : ''}`}>
                 <span className="sidebar-icon">📅</span>
                 <span className="sidebar-text">Công Việc Tuần</span>
               </Link>
-              <Link to="/cong-viec-thang" className={`sidebar-subitem ${isActive('/cong-viec-thang')}`}>
+              <Link to="/cong-viec-thang" className={`sidebar-subitem ${isActive('/cong-viec-thang')} ${highlightText('Công Việc Tháng') || highlightText('tháng') ? 'highlight' : ''}`}>
                 <span className="sidebar-icon">📆</span>
                 <span className="sidebar-text">Công Việc Tháng</span>
               </Link>
@@ -81,22 +120,22 @@ function Sidebar() {
           )}
         </div>
 
-        <Link to="/hoi-thi" className={`sidebar-item ${isActive('/hoi-thi')}`}>
+        <Link to="/hoi-thi" className={`sidebar-item ${isActive('/hoi-thi')} ${highlightText('Hội Thi') ? 'highlight' : ''}`}>
           <span className="sidebar-icon">🏆</span>
           <span className="sidebar-text">Hội Thi</span>
         </Link>
 
-        <a href="https://qlhsvp.onrender.com" className="sidebar-item" target="_blank" rel="noopener noreferrer">
+        <a href="https://qlhsvp.onrender.com" className={`sidebar-item ${highlightText('Học Sinh Vi Phạm') || highlightText('học sinh') ? 'highlight' : ''}`} target="_blank" rel="noopener noreferrer">
           <span className="sidebar-icon">👨‍🎓</span>
           <span className="sidebar-text">QL Học Sinh Vi Phạm</span>
         </a>
 
-        <Link to="/ra-de-kiem-tra" className={`sidebar-item ${isActive('/ra-de-kiem-tra')}`}>
+        <Link to="/ra-de-kiem-tra" className={`sidebar-item ${isActive('/ra-de-kiem-tra')} ${highlightText('Ra Đề') || highlightText('đề') ? 'highlight' : ''}`}>
           <span className="sidebar-icon">📄</span>
           <span className="sidebar-text">Ra Đề Kiểm Tra</span>
         </Link>
 
-        <Link to="/thong-bao" className={`sidebar-item ${isActive('/thong-bao')}`}>
+        <Link to="/thong-bao" className={`sidebar-item ${isActive('/thong-bao')} ${highlightText('Thông Báo') ? 'highlight' : ''}`}>
           <span className="sidebar-icon">🔔</span>
           <span className="sidebar-text">Thông Báo</span>
           <span className="notification-dot"></span>

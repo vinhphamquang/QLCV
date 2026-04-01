@@ -12,6 +12,25 @@ router.get('/', async (req, res) => {
   }
 });
 
+// Get upcoming exam period inspections (within 7 days)
+router.get('/upcoming', async (req, res) => {
+  try {
+    const today = new Date();
+    const nextWeek = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
+    
+    const inspections = await ExamPeriodInspection.find({
+      ngay: {
+        $gte: today,
+        $lte: nextWeek
+      }
+    }).sort({ ngay: 1 });
+    
+    res.json(inspections);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 // Get single exam period inspection
 router.get('/:id', async (req, res) => {
   try {

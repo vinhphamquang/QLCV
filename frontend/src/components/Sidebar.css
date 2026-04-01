@@ -1,12 +1,12 @@
 .sidebar {
   width: 280px;
   height: 100vh;
-  background: linear-gradient(180deg, #f59e0b 0%, #d97706 100%);
+  background: linear-gradient(180deg, #2563eb 0%, #1e40af 100%);
   position: fixed;
   left: 0;
   top: 0;
   overflow-y: auto;
-  box-shadow: 4px 0 15px rgba(245, 158, 11, 0.3);
+  box-shadow: 4px 0 15px rgba(37, 99, 235, 0.3);
   z-index: 1000;
 }
 
@@ -15,14 +15,53 @@
   border-bottom: 2px solid rgba(255, 255, 255, 0.2);
 }
 
+.sidebar-search {
+  padding: 1rem 1rem 0.5rem 1rem;
+}
+
+.sidebar-search-input {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  font-size: 0.95rem;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+.sidebar-search-input::placeholder {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.sidebar-search-input:focus {
+  border-color: rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.1);
+}
+
 .sidebar-logo {
   text-decoration: none;
   color: white;
-  display: block;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.sidebar-logo-img {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  border-radius: 50%;
+  background: white;
+  padding: 5px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
 .sidebar-logo h2 {
-  font-size: 1.3rem;
+  font-size: 1.1rem;
   font-weight: 700;
   text-align: center;
   margin: 0;
@@ -60,6 +99,21 @@
   background: rgba(255, 255, 255, 0.25);
   border-left: 4px solid white;
   font-weight: 600;
+}
+
+.sidebar-item.highlight,
+.sidebar-subitem.highlight {
+  background: rgba(255, 255, 255, 0.3) !important;
+  animation: highlightPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes highlightPulse {
+  0%, 100% {
+    background: rgba(255, 255, 255, 0.3);
+  }
+  50% {
+    background: rgba(255, 255, 255, 0.4);
+  }
 }
 
 .sidebar-item.open {

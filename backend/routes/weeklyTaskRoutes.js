@@ -12,6 +12,26 @@ router.get('/', async (req, res) => {
   }
 });
 
+// Get upcoming weekly tasks (within 7 days and not completed)
+router.get('/upcoming', async (req, res) => {
+  try {
+    const today = new Date();
+    const nextWeek = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
+    
+    const tasks = await WeeklyTask.find({
+      thoiGian: {
+        $gte: today,
+        $lte: nextWeek
+      },
+      daHoanThanh: false
+    }).sort({ thoiGian: 1 });
+    
+    res.json(tasks);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 // Get single weekly task
 router.get('/:id', async (req, res) => {
   try {
