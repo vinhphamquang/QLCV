@@ -15,8 +15,8 @@ function Notifications() {
     try {
       setLoading(true);
       const [inspectionsRes, examsRes] = await Promise.all([
-        axios.get('http://localhost:5000/api/inspections/upcoming'),
-        axios.get('http://localhost:5000/api/exam-preparations/upcoming')
+        axios.get('http://localhost:5000/api/inspections/upcoming').catch(() => ({ data: [] })),
+        axios.get('http://localhost:5000/api/exam-preparations/upcoming').catch(() => ({ data: [] }))
       ]);
       
       setUpcomingInspections(inspectionsRes.data);
@@ -50,6 +50,7 @@ function Notifications() {
     
     if (diffDays === 0) return 'Hôm nay';
     if (diffDays === 1) return 'Ngày mai';
+    if (diffDays < 0) return `Quá ${Math.abs(diffDays)} ngày`;
     return `Còn ${diffDays} ngày`;
   };
 
@@ -67,16 +68,24 @@ function Notifications() {
   if (loading) {
     return (
       <div className="notifications">
-        <h2>Thông Báo Tới Hẹn</h2>
-        <p className="loading">Đang tải thông báo...</p>
+        <div className="notifications-header">
+          <h2>🔔 Thông Báo & Nhắc Nhở</h2>
+          <p>Theo dõi các công việc và sự kiện sắp tới</p>
+        </div>
+        <p className="loading">⏳ Đang tải thông báo...</p>
       </div>
     );
   }
 
   return (
     <div className="notifications">
+      <div className="notifications-header">
+        <h2>🔔 Thông Báo & Nhắc Nhở</h2>
+        <p>Theo dõi các công việc và sự kiện sắp tới</p>
+      </div>
+
       <div className="header-section">
-        <h2>Thông Báo Tới Hẹn</h2>
+        <h3 style={{ color: '#f59e0b', fontSize: '1.5rem' }}>📋 Danh Sách Thông Báo</h3>
         <button className="btn-refresh" onClick={fetchNotifications}>
           🔄 Làm Mới
         </button>
@@ -102,14 +111,14 @@ function Notifications() {
                   </div>
                   <div className="notification-body">
                     <p className="teacher-name">👨‍🏫 {inspection.tenGiaoVien}</p>
-                    <p className="content">{inspection.noiDungKiemTra}</p>
-                    <p className="period">Tiết: {inspection.tietKiemTra}</p>
+                    <p className="content">📝 {inspection.noiDungKiemTra}</p>
+                    <p className="period">⏰ Tiết: {inspection.tietKiemTra}</p>
                   </div>
                 </div>
               ))}
             </div>
           ) : (
-            <p className="no-notifications">Không có kiểm tra nội bộ nào trong 7 ngày tới</p>
+            <p className="no-notifications">✅ Không có kiểm tra nội bộ nào trong 7 ngày tới</p>
           )}
         </div>
 
@@ -132,15 +141,15 @@ function Notifications() {
                   </div>
                   <div className="notification-body">
                     <p className="subject">📚 Môn: {exam.mon}</p>
-                    <p className="person">Người ra đề: {exam.nguoiRaDe}</p>
-                    <p className="person">Người nộp: {exam.nguoiNop}</p>
-                    <p className="time">Thời gian: {exam.thoiGianLamBai}</p>
+                    <p className="person">👤 Người ra đề: {exam.nguoiRaDe}</p>
+                    <p className="person">📤 Người nộp: {exam.nguoiNop}</p>
+                    <p className="time">⏱️ Thời gian: {exam.thoiGianLamBai}</p>
                   </div>
                 </div>
               ))}
             </div>
           ) : (
-            <p className="no-notifications">Không có đề kiểm tra nào cần nộp trong 7 ngày tới</p>
+            <p className="no-notifications">✅ Không có đề kiểm tra nào cần nộp trong 7 ngày tới</p>
           )}
         </div>
       </div>
@@ -149,17 +158,17 @@ function Notifications() {
       <div className="summary">
         <div className="summary-card">
           <div className="summary-number">{upcomingInspections.length}</div>
-          <div className="summary-label">Kiểm tra nội bộ sắp tới</div>
+          <div className="summary-label">📋 Kiểm tra nội bộ sắp tới</div>
         </div>
         <div className="summary-card">
           <div className="summary-number">{upcomingExams.length}</div>
-          <div className="summary-label">Đề kiểm tra cần nộp</div>
+          <div className="summary-label">📝 Đề kiểm tra cần nộp</div>
         </div>
         <div className="summary-card">
           <div className="summary-number">
             {upcomingInspections.length + upcomingExams.length}
           </div>
-          <div className="summary-label">Tổng số công việc</div>
+          <div className="summary-label">📊 Tổng số công việc</div>
         </div>
       </div>
     </div>

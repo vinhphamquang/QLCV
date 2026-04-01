@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Header from './components/Header';
+import Sidebar from './components/Sidebar';
+import Topbar from './components/Topbar';
 import Home from './pages/Home';
 import TeacherManagement from './pages/TeacherManagement';
 import InspectionManagement from './pages/InspectionManagement';
@@ -15,20 +16,23 @@ function App() {
   return (
     <Router>
       <div className="App">
-        <Header />
-        <main className="main-content">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/quan-ly-giao-vien" element={<TeacherManagement />} />
-            <Route path="/kiem-tra-noi-bo" element={<InspectionManagement />} />
-            <Route path="/kiem-tra-cac-ky" element={<ExamPeriodInspection />} />
-            <Route path="/cong-viec-tuan" element={<WeeklyTasks />} />
-            <Route path="/cong-viec-thang" element={<MonthlyTasks />} />
-            <Route path="/hoi-thi" element={<Competitions />} />
-            <Route path="/ra-de-kiem-tra" element={<ExamPreparation />} />
-            <Route path="/thong-bao" element={<Notifications />} />
-          </Routes>
-        </main>
+        <Sidebar />
+        <div className="main-wrapper">
+          <Topbar />
+          <main className="main-content">
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/quan-ly-giao-vien" element={<TeacherManagement />} />
+              <Route path="/kiem-tra-noi-bo" element={<InspectionManagement />} />
+              <Route path="/kiem-tra-cac-ky" element={<ExamPeriodInspection />} />
+              <Route path="/cong-viec-tuan" element={<WeeklyTasks />} />
+              <Route path="/cong-viec-thang" element={<MonthlyTasks />} />
+              <Route path="/hoi-thi" element={<Competitions />} />
+              <Route path="/ra-de-kiem-tra" element={<ExamPreparation />} />
+              <Route path="/thong-bao" element={<Notifications />} />
+            </Routes>
+          </main>
+        </div>
       </div>
     </Router>
   );
