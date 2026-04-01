@@ -30,6 +30,7 @@ const timetableRoutes = require('./routes/timetableChangeRoutes');
 const lessonLearnedRoutes = require('./routes/lessonLearnedRoutes');
 const holidayRoutes = require('./routes/holidayRoutes');
 const keyActivityRoutes = require('./routes/keyActivityRoutes');
+const authRoutes = require('./routes/authRoutes');
 
 
 app.use('/api/teachers', teacherRoutes);
@@ -47,6 +48,7 @@ app.use('/api/timetable-changes', timetableRoutes);
 app.use('/api/lessons-learned', lessonLearnedRoutes);
 app.use('/api/holidays', holidayRoutes);
 app.use('/api/key-activities', keyActivityRoutes);
+app.use('/api/auth', authRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
