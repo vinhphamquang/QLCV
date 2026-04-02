@@ -11,6 +11,7 @@ const AssignmentManagement = () => {
     notes: ''
   });
   const [editingId, setEditingId] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const fetchAssignments = async () => {
     try {
@@ -21,9 +22,7 @@ const AssignmentManagement = () => {
     }
   };
 
-  useEffect(() => {
-    fetchAssignments();
-  }, []);
+  useEffect(() => { fetchAssignments(); }, []);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -34,12 +33,10 @@ const AssignmentManagement = () => {
     try {
       if (editingId) {
         await axiosClient.put(`/assignment-changes/${editingId}`, formData);
-        alert('Cập nhật thành công!');
       } else {
         await axiosClient.post('/assignment-changes', formData);
-        alert('Thêm mới thành công!');
       }
-      resetForm();
+      closeModal();
       fetchAssignments();
     } catch (err) {
       alert(err.response?.data?.message || 'Có lỗi xảy ra!');
@@ -66,153 +63,171 @@ const AssignmentManagement = () => {
       endWeek: item.endWeek,
       notes: item.notes
     });
+    setIsModalOpen(true);
   };
 
-  const resetForm = () => {
+  const handleOpenAdd = () => {
+    setEditingId(null);
+    setFormData({ subject: '', lessonCount: '', startWeek: '', endWeek: '', notes: '' });
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
     setEditingId(null);
     setFormData({ subject: '', lessonCount: '', startWeek: '', endWeek: '', notes: '' });
   };
 
   return (
-    <div className="tw:p-8 tw:max-w-7xl tw:mx-auto">
-      {/* Tiêu đề trang */}
-      <div className="tw:mb-8 tw:border-b-2 tw:border-blue-500 tw:pb-2">
-        <h2 className="tw:text-3xl tw:font-extrabold tw:text-gray-800 tw:tracking-tight">
-          QUẢN LÝ THAY ĐỔI PHÂN CÔNG TIẾT
+    // Đã thêm thẻ div bao ngoài cùng (bắt buộc trong React)
+    // Đã xóa class bg-[#eaf4fc] và min-h-screen để bỏ background
+    <div className="p-8 max-w-full mx-auto font-sans bg-transparent">
+
+      {/* HEADER: Tiêu đề và Nút Thêm */}
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-[2rem] font-bold text-[#2563eb]">
+          Quản Lý Thay Đổi Phân Môn Số Tiết
         </h2>
-        <p className="tw:text-gray-500 tw:mt-1">Cập nhật và điều chỉnh kế hoạch giảng dạy định kỳ</p>
+        <button
+          onClick={handleOpenAdd}
+          className="bg-[#2453c9] hover:bg-blue-800 text-white font-medium py-2 px-5 rounded shadow transition-colors flex items-center gap-2 text-sm"
+        >
+          <span className="text-lg leading-none">+</span> Thêm Phân Công
+        </button>
       </div>
 
-      {/* CARD FORM NHẬP LIỆU */}
-      <div className="tw:bg-white tw:shadow-xl tw:rounded-xl tw:p-6 tw:mb-10 tw:border tw:border-gray-200">
-        <h3 className="tw:text-lg tw:font-bold tw:text-blue-600 tw:mb-5 tw:flex tw:items-center">
-          <span className="tw:mr-2">📝</span>
-          {editingId ? 'Cập nhật thông tin' : 'Thêm phân công mới'}
-        </h3>
-        
-        <form onSubmit={handleSubmit} className="tw:grid tw:grid-cols-1 md:tw:grid-cols-2 lg:tw:grid-cols-5 tw:gap-4">
-          <div className="tw:flex tw:flex-col">
-            <label className="tw:text-xs tw:font-bold tw:text-gray-500 tw:uppercase tw:mb-1">Môn học</label>
-            <input 
-              name="subject" value={formData.subject} onChange={handleChange} required 
-              placeholder="Toán, Văn..."
-              className="tw:border-2 tw:border-gray-200 tw:rounded-lg tw:px-3 tw:py-2 tw:focus:border-blue-500 tw:outline-none tw:transition-all"
-            />
-          </div>
+      {/* BẢNG DANH SÁCH */}
+      <div className="bg-white rounded-lg shadow border border-gray-200 overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr className="bg-[linear-gradient(135deg, #2563eb 0%, #1e40af 100%)] text-white">
+                <th className="px-6 py-3.5 text-base font-medium whitespace-nowrap">STT</th>
+                <th className="px-6 py-3.5 text-base font-medium whitespace-nowrap">Môn Học</th>
+                <th className="px-6 py-3.5 text-base font-medium whitespace-nowrap">Số Tiết</th>
+                <th className="px-6 py-3.5 text-base font-medium whitespace-nowrap">Thời Gian</th>
+                <th className="px-6 py-3.5 text-base font-medium whitespace-nowrap">Ghi Chú</th>
+                <th className="px-6 py-3.5 text-base font-medium whitespace-nowrap text-center">Thao Tác</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-200">
+              {assignments.length > 0 ? (
+                assignments.map((item, index) => (
+                  <tr key={item._id} className="hover:bg-blue-50/50 transition-colors">
+                    <td className="px-6 py-4 text-base font-[450] text-[#0a0a0a]">{index + 1}</td>
+                    <td className="px-6 py-4 text-base font-[450] text-[#0a0a0a]">{item.subject}</td>
+                    <td className="px-6 py-4 text-base font-[450] text-[#0a0a0a]">{item.lessonCount}</td>
+                    <td className="px-6 py-4 text-base font-[450] text-[#0a0a0a]">Tuần {item.startWeek} - {item.endWeek}</td>
+                    <td className="px-6 py-4 text-base font-[450] text-[#0a0a0a]">{item.notes || ''}</td>
+                    <td className="px-6 py-4 text-center">
+                      <div className="flex justify-center gap-2">
+                        <button
+                          onClick={() => handleEdit(item)}
+                          className="bg-amber-500 hover:bg-amber-600 text-white px-4 py-1.5 rounded text-sm font-medium transition-colors border-none outline-none"
+                        >
+                          Sửa
+                        </button>
 
-          <div className="tw:flex tw:flex-col">
-            <label className="tw:text-xs tw:font-bold tw:text-gray-500 tw:uppercase tw:mb-1">Số tiết</label>
-            <input 
-              name="lessonCount" type="number" value={formData.lessonCount} onChange={handleChange} required 
-              className="tw:border-2 tw:border-gray-200 tw:rounded-lg tw:px-3 tw:py-2 tw:focus:border-blue-500 tw:outline-none"
-            />
-          </div>
-
-          <div className="tw:flex tw:flex-col">
-            <label className="tw:text-xs tw:font-bold tw:text-gray-500 tw:uppercase tw:mb-1">Tuần bắt đầu</label>
-            <input 
-              name="startWeek" type="number" value={formData.startWeek} onChange={handleChange} required 
-              className="tw:border-2 tw:border-gray-200 tw:rounded-lg tw:px-3 tw:py-2 tw:focus:border-blue-500 tw:outline-none"
-            />
-          </div>
-
-          <div className="tw:flex tw:flex-col">
-            <label className="tw:text-xs tw:font-bold tw:text-gray-500 tw:uppercase tw:mb-1">Tuần kết thúc</label>
-            <input 
-              name="endWeek" type="number" value={formData.endWeek} onChange={handleChange} required 
-              className="tw:border-2 tw:border-gray-200 tw:rounded-lg tw:px-3 tw:py-2 tw:focus:border-blue-500 tw:outline-none"
-            />
-          </div>
-
-          <div className="tw:flex tw:flex-col lg:tw:col-span-4">
-            <label className="tw:text-xs tw:font-bold tw:text-gray-500 tw:uppercase tw:mb-1">Ghi chú thêm</label>
-            <input 
-              name="notes" value={formData.notes} onChange={handleChange} 
-              placeholder="Nhập ghi chú cho thầy..."
-              className="tw:border-2 tw:border-gray-200 tw:rounded-lg tw:px-3 tw:py-2 tw:focus:border-blue-500 tw:outline-none"
-            />
-          </div>
-
-          <div className="tw:flex tw:items-end tw:gap-2 lg:tw:col-span-1">
-            <button 
-              type="submit" 
-              className={`tw:flex-1 tw:py-2 tw:rounded-lg tw:font-bold tw:text-white tw:transition-all ${editingId ? 'tw:bg-orange-500 tw:hover:bg-orange-600' : 'tw:bg-blue-600 tw:hover:bg-blue-700'}`}
-            >
-              {editingId ? 'Cập nhật' : 'Thêm ngay'}
-            </button>
-            {editingId && (
-              <button 
-                type="button" onClick={resetForm}
-                className="tw:bg-gray-400 tw:hover:bg-gray-500 tw:text-white tw:px-4 tw:py-2 tw:rounded-lg tw:font-bold"
-              >
-                Hủy
-              </button>
-            )}
-          </div>
-        </form>
-      </div>
-
-      {/* BẢNG DANH SÁCH DỮ LIỆU */}
-      <div className="tw:bg-white tw:shadow-2xl tw:rounded-2xl tw:overflow-hidden tw:border tw:border-gray-100">
-        <table className="tw:w-full tw:text-left tw:border-collapse">
-          <thead>
-            <tr className="tw:bg-gray-50 tw:border-b tw:border-gray-200">
-              <th className="tw:px-6 tw:py-4 tw:text-xs tw:font-black tw:text-gray-600 tw:uppercase">Môn học</th>
-              <th className="tw:px-6 tw:py-4 tw:text-xs tw:font-black tw:text-gray-600 tw:uppercase">Số tiết</th>
-              <th className="tw:px-6 tw:py-4 tw:text-xs tw:font-black tw:text-gray-600 tw:uppercase">Thời gian</th>
-              <th className="tw:px-6 tw:py-4 tw:text-xs tw:font-black tw:text-gray-600 tw:uppercase">Ghi chú</th>
-              <th className="tw:px-6 tw:py-4 tw:text-xs tw:font-black tw:text-gray-600 tw:uppercase tw:text-center">Thao tác</th>
-            </tr>
-          </thead>
-          <tbody className="tw:divide-y tw:divide-gray-100">
-            {assignments.length > 0 ? (
-              assignments.map((item) => (
-                <tr key={item._id} className="tw:hover:bg-blue-50/50 tw:transition-colors">
-                  <td className="tw:px-6 tw:py-4 tw:font-bold tw:text-gray-800">{item.subject}</td>
-                  <td className="tw:px-6 tw:py-4">
-                    <span className="tw:px-3 tw:py-1 tw:bg-purple-100 tw:text-purple-700 tw:rounded-full tw:text-sm tw:font-bold">
-                      {item.lessonCount} tiết
-                    </span>
-                  </td>
-                  <td className="tw:px-6 tw:py-4">
-                    <div className="tw:text-sm tw:text-gray-700">
-                      Tuần <span className="tw:font-bold tw:text-blue-600">{item.startWeek}</span> 
-                      <span className="tw:mx-1">→</span> 
-                      <span className="tw:font-bold tw:text-blue-600">{item.endWeek}</span>
-                    </div>
-                  </td>
-                  <td className="tw:px-6 tw:py-4 tw:text-sm tw:text-gray-500 tw:italic">
-                    {item.notes || '---'}
-                  </td>
-                  <td className="tw:px-6 tw:py-4">
-                    <div className="tw:flex tw:justify-center tw:gap-3">
-                      <button 
-                        onClick={() => handleEdit(item)} 
-                        className="tw:text-blue-500 tw:hover:text-blue-700 tw:font-bold tw:text-sm tw:underline"
-                      >
-                        Sửa
-                      </button>
-                      <button 
-                        onClick={() => handleDelete(item._id)} 
-                        className="tw:text-red-500 tw:hover:text-red-700 tw:font-bold tw:text-sm tw:underline"
-                      >
-                        Xóa
-                      </button>
-                    </div>
+                        <button
+                          onClick={() => handleDelete(item._id)}
+                          className="bg-red-500 hover:bg-red-600 text-white px-4 py-1.5 rounded text-sm font-medium transition-colors border-none outline-none"
+                        >
+                          Xóa
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="6" className="px-6 py-10 text-center text-gray-500 italic text-sm">
+                    Chưa có dữ liệu phân công.
                   </td>
                 </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan="5" className="tw:px-6 tw:py-20 tw:text-center tw:text-gray-400 tw:italic">
-                  Chưa có dữ liệu nào được ghi nhận...
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
-    </div>
+
+      {/* MODAL POPUP FORM */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+          <div className="bg-white w-full max-w-2xl rounded-lg shadow-xl overflow-hidden">
+
+            {/* Modal Header */}
+            <div className="bg-gray-50 px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+              <h3 className="text-lg font-medium text-[#2453c9]">
+                {editingId ? 'Chỉnh Sửa Phân Công' : 'Thêm Phân Công Mới'}
+              </h3>
+              <button onClick={closeModal} className="text-gray-400 hover:text-red-500 text-2xl font-light leading-none">
+                &times;
+              </button>
+            </div>
+
+            {/* Modal Body (Form) */}
+            <form onSubmit={handleSubmit} className="p-6 space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">Tên môn học</label>
+                <input
+                  name="subject" value={formData.subject} onChange={handleChange} required
+                  className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-[#2453c9] focus:ring-1 focus:ring-[#2453c9] transition-colors"
+                />
+              </div>
+
+              <div className="grid grid-cols-3 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Số tiết</label>
+                  <input
+                    name="lessonCount" type="number" value={formData.lessonCount} onChange={handleChange} required
+                    className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-[#2453c9] focus:ring-1 focus:ring-[#2453c9] transition-colors"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Tuần bắt đầu</label>
+                  <input
+                    name="startWeek" type="number" value={formData.startWeek} onChange={handleChange} required
+                    className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-[#2453c9] focus:ring-1 focus:ring-[#2453c9] transition-colors"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Tuần kết thúc</label>
+                  <input
+                    name="endWeek" type="number" value={formData.endWeek} onChange={handleChange} required
+                    className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-[#2453c9] focus:ring-1 focus:ring-[#2453c9] transition-colors"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">Ghi chú thêm</label>
+                <textarea
+                  name="notes" value={formData.notes} onChange={handleChange} rows="3"
+                  className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-[#2453c9] focus:ring-1 focus:ring-[#2453c9] transition-colors resize-none"
+                />
+              </div>
+
+              {/* Modal Footer (Buttons) */}
+              <div className="pt-4 mt-6 border-t border-gray-100 flex justify-end gap-3">
+                <button
+                  type="button" onClick={closeModal}
+                  className="px-5 py-2 rounded border border-gray-300 bg-white text-gray-700 text-sm font-medium hover:bg-gray-50 transition-colors"
+                >
+                  Hủy Bỏ
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2 rounded bg-[#2453c9] text-white text-sm font-medium hover:bg-blue-800 transition-colors"
+                >
+                  {editingId ? 'Lưu Cập Nhật' : 'Xác Nhận Thêm'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+    </div> // Đóng thẻ div wrapper
   );
 };
 

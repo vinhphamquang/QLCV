@@ -12,6 +12,25 @@ router.get('/', async (req, res) => {
   }
 });
 
+// Get upcoming monthly tasks (within 7 days)
+router.get('/upcoming', async (req, res) => {
+  try {
+    const today = new Date();
+    const nextWeek = new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000);
+    
+    const tasks = await MonthlyTask.find({
+      thoiGian: {
+        $gte: today,
+        $lte: nextWeek
+      }
+    }).sort({ thoiGian: 1 });
+    
+    res.json(tasks);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 // Get single monthly task
 router.get('/:id', async (req, res) => {
   try {
