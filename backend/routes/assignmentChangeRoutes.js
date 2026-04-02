@@ -8,5 +8,6 @@ router.post('/', assignmentController.createAssignmentChange);
 router.get('/', assignmentController.getAllAssignmentChanges);
 router.put('/:id', assignmentController.updateAssignmentChange);
 router.delete('/:id', assignmentController.deleteAssignmentChange);
+router.post('/import', assignmentController.importAssignments);
 
 module.exports = router;

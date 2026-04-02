@@ -3,10 +3,7 @@ import axios from 'axios';
 
 const Auth = ({ onLoginSuccess }) => {
   const [currentView, setCurrentView] = useState('login'); 
-  const [gatekeeperIntent, setGatekeeperIntent] = useState('register'); 
   const [showWarning, setShowWarning] = useState(false);
-  
-  // State quản lý bước của màn hình Quên mật khẩu (1: Nhập User, 2: Nhập Pass mới)
   const [forgotStep, setForgotStep] = useState(1);
 
   const [formData, setFormData] = useState({
@@ -29,13 +26,7 @@ const Auth = ({ onLoginSuccess }) => {
     setCurrentView(view);
     resetForm();
     setShowWarning(false);
-    setForgotStep(1); // Reset lại bước khi chuyển trang
-  };
-
-  const openGatekeeper = (intent) => {
-    setGatekeeperIntent(intent);
-    setCurrentView('gatekeeper');
-    resetForm();
+    setForgotStep(1); 
   };
 
   // 1. XỬ LÝ ĐĂNG NHẬP
@@ -55,40 +46,53 @@ const Auth = ({ onLoginSuccess }) => {
     }
   };
 
-  // 2. XỬ LÝ GÁC CỔNG
-  const handleGatekeeper = (e) => {
+// 2. XỬ LÝ GÁC CỔNG (CHỈ DÀNH CHO ĐĂNG KÝ)
+  const handleGatekeeper = async (e) => {
     e.preventDefault();
     if (!formData.secretPassword.trim()) {
       alert('Vui lòng nhập Mã bí mật hệ thống!');
       return;
     }
-    setCurrentView(gatekeeperIntent); 
+    
+    try {
+      // GỌI API KIỂM TRA MÃ BÍ MẬT HỆ THỐNG
+      const res = await axios.post('http://localhost:5000/api/auth/verify-system-secret', {
+        secretPassword: formData.secretPassword
+      });
+      
+      if (res.data.success) {
+        // Vượt ải thành công -> Mở cửa cho Đăng ký
+        setCurrentView('register'); 
+      }
+    } catch (err) {
+      alert(err.response?.data?.message || 'Mã bí mật hệ thống không chính xác!');
+    }
   };
 
-  // 3. XỬ LÝ CHECK TÊN ĐĂNG NHẬP (QUÊN MẬT KHẨU BƯỚC 1)
-  const handleCheckUsername = async (e) => {
+  // 3. XỬ LÝ BƯỚC 1 QUÊN MẬT KHẨU (KIỂM TRA USERNAME + MÃ BÍ MẬT CÙNG LÚC)
+  const handleVerifyRecovery = async (e) => {
     e.preventDefault();
-    if (!formData.username.trim()) {
-      alert('Vui lòng nhập Tên đăng nhập!');
+    if (!formData.username.trim() || !formData.secretPassword.trim()) {
+      alert('Vui lòng nhập đầy đủ thông tin!');
       return;
     }
     
     try {
-      // GỌI API XUỐNG BACKEND ĐỂ KIỂM TRA XEM USERNAME NÀY CÓ TỒN TẠI KHÔNG
-      const res = await axios.post('http://localhost:5000/api/auth/check-username', {
-        username: formData.username
+      // GỌI API KIỂM TRA XEM TÀI KHOẢN VÀ MÃ BÍ MẬT CÓ KHỚP NHAU KHÔNG
+      const res = await axios.post('http://localhost:5000/api/auth/verify-recovery', {
+        username: formData.username,
+        secretPassword: formData.secretPassword
       });
       
       if (res.data.success) {
-        setForgotStep(2); // Nếu tồn tại, mở bước 2 cho nhập Pass mới
+        setForgotStep(2); // Vượt ải thành công -> Cho qua bước đổi pass
       }
     } catch (err) {
-      // Báo lỗi ngay lập tức nếu không tìm thấy
-      alert(err.response?.data?.message || 'Tài khoản này không tồn tại trong hệ thống!');
+      alert(err.response?.data?.message || 'Tài khoản hoặc Mã bí mật không chính xác!');
     }
   };
 
-  // 4. XỬ LÝ MỞ POPUP CẢNH BÁO ĐĂNG KÝ
+  // 4. XỬ LÝ POPUP ĐĂNG KÝ
   const handlePreRegister = (e) => {
     e.preventDefault();
     if (formData.password !== formData.confirmPassword) {
@@ -112,12 +116,12 @@ const Auth = ({ onLoginSuccess }) => {
         switchView('login'); 
       }
     } catch (err) {
-      alert(err.response?.data?.message || 'Có lỗi xảy ra!');
+      alert(err.response?.data?.message || 'Tài khoản đã tồn tại hoặc có lỗi xảy ra!');
       setShowWarning(false);
     }
   };
 
-  // 6. XỬ LÝ KHÔI PHỤC MẬT KHẨU (BƯỚC 2)
+  // 6. XỬ LÝ BƯỚC 2 QUÊN MẬT KHẨU (ĐỔI PASS)
   const handleForgotPass = async (e) => {
     e.preventDefault();
     if (formData.password !== formData.confirmPassword) {
@@ -135,13 +139,12 @@ const Auth = ({ onLoginSuccess }) => {
         switchView('login');
       }
     } catch (err) {
-      alert(err.response?.data?.message || 'Mã bí mật hoặc thao tác không đúng!');
+      alert(err.response?.data?.message || 'Có lỗi xảy ra trong quá trình đổi mật khẩu!');
     }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#f0f4f8] font-sans p-4 relative">
-      
       <div className="w-full max-w-[420px] bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden z-10">
         
         <div className="bg-[#2453c9] py-6 px-8 text-center">
@@ -156,108 +159,105 @@ const Auth = ({ onLoginSuccess }) => {
 
         <div className="p-8">
           
-          {/* ==================== MÀN HÌNH ĐĂNG NHẬP ==================== */}
+          {/* MÀN HÌNH ĐĂNG NHẬP */}
           {currentView === 'login' && (
             <form onSubmit={handleLogin} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1.5">Tên đăng nhập</label>
-                <input name="username" value={formData.username} onChange={handleChange} required className="w-full px-4 py-2.5 border border-gray-300 rounded text-base text-[#333] font-[450] focus:border-[#2453c9] focus:ring-1 focus:ring-[#2453c9]" />
+                <input name="username" value={formData.username} onChange={handleChange} required className="w-full px-4 py-2.5 border border-gray-300 rounded focus:border-[#2453c9] focus:ring-1 focus:ring-[#2453c9]" />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1.5">Mật khẩu</label>
-                <input name="password" type="password" value={formData.password} onChange={handleChange} required className="w-full px-4 py-2.5 border border-gray-300 rounded text-base text-[#333] font-[450] focus:border-[#2453c9] focus:ring-1 focus:ring-[#2453c9]" />
+                <input name="password" type="password" value={formData.password} onChange={handleChange} required className="w-full px-4 py-2.5 border border-gray-300 rounded focus:border-[#2453c9] focus:ring-1 focus:ring-[#2453c9]" />
               </div>
               <div className="text-right">
-                <button type="button" onClick={() => openGatekeeper('forgot')} className="text-sm text-[#2453c9] hover:underline font-medium">Quên mật khẩu?</button>
+                <button type="button" onClick={() => switchView('forgot')} className="text-sm text-[#2453c9] hover:underline font-medium">Quên mật khẩu?</button>
               </div>
               <button type="submit" className="w-full bg-[#2453c9] hover:bg-blue-800 text-white font-medium py-3 rounded mt-2">Vào Hệ Thống</button>
               <div className="text-center mt-4 text-sm text-gray-600">
-                Giáo viên mới? <button type="button" onClick={() => openGatekeeper('register')} className="text-[#2453c9] font-medium hover:underline">Đăng ký ngay</button>
+                Giáo viên mới? <button type="button" onClick={() => switchView('gatekeeper')} className="text-[#2453c9] font-medium hover:underline">Đăng ký ngay</button>
               </div>
             </form>
           )}
 
-          {/* ==================== MÀN HÌNH GÁC CỔNG ==================== */}
+          {/* MÀN HÌNH GÁC CỔNG (CHỈ DÙNG CHO ĐĂNG KÝ) */}
           {currentView === 'gatekeeper' && (
             <form onSubmit={handleGatekeeper} className="space-y-4">
               <div className="bg-amber-50 text-amber-700 p-4 rounded text-sm mb-4 border border-amber-200">
-                {gatekeeperIntent === 'register' 
-                  ? 'Hệ thống chỉ dành cho giáo viên nội bộ. Vui lòng nhập Mã bí mật để tiếp tục tạo tài khoản.' 
-                  : 'Vui lòng xuất trình Mã bí mật hệ thống để được cấp quyền khôi phục mật khẩu.'}
+                Hệ thống chỉ dành cho giáo viên nội bộ. Vui lòng nhập Mã bí mật để tiếp tục tạo tài khoản.
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1.5">Mã bí mật hệ thống</label>
-                <input name="secretPassword" type="password" value={formData.secretPassword} onChange={handleChange} required className="w-full px-4 py-2.5 border border-gray-300 rounded text-base text-[#333] font-[450] focus:border-[#2453c9] focus:ring-1 focus:ring-[#2453c9]" />
+                <input name="secretPassword" type="password" value={formData.secretPassword} onChange={handleChange} required className="w-full px-4 py-2.5 border border-gray-300 rounded focus:border-[#2453c9] focus:ring-1 focus:ring-[#2453c9]" />
               </div>
-              <button type="submit" className="w-full bg-amber-500 hover:bg-amber-600 text-white font-medium py-3 rounded mt-2">Xác Nhận Mã Bí Mật</button>
+              <button type="submit" className="w-full bg-amber-500 hover:bg-amber-600 text-white font-medium py-3 rounded mt-2">Mở Cửa Đăng Ký</button>
               <button type="button" onClick={() => switchView('login')} className="w-full text-gray-500 hover:text-gray-700 text-sm mt-3 font-medium">Trở về Đăng nhập</button>
             </form>
           )}
 
-          {/* ==================== MÀN HÌNH FORM ĐĂNG KÝ ==================== */}
+          {/* FORM ĐĂNG KÝ */}
           {currentView === 'register' && (
             <form onSubmit={handlePreRegister} className="space-y-4">
+              {/* Giấu Username và Mã bí mật */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1.5">Tên đăng nhập</label>
-                <input name="username" value={formData.username} onChange={handleChange} required className="w-full px-4 py-2.5 border border-gray-300 rounded text-base text-[#333] font-[450]" />
+                <input name="username" value={formData.username} onChange={handleChange} required className="w-full px-4 py-2.5 border border-gray-300 rounded" />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1.5">Họ và tên giáo viên</label>
-                <input name="fullName" value={formData.fullName} onChange={handleChange} required className="w-full px-4 py-2.5 border border-gray-300 rounded text-base text-[#333] font-[450]" />
+                <input name="fullName" value={formData.fullName} onChange={handleChange} required className="w-full px-4 py-2.5 border border-gray-300 rounded" />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1.5">Tạo mật khẩu</label>
-                <input name="password" type="password" value={formData.password} onChange={handleChange} required className="w-full px-4 py-2.5 border border-gray-300 rounded text-base text-[#333] font-[450]" />
+                <input name="password" type="password" value={formData.password} onChange={handleChange} required className="w-full px-4 py-2.5 border border-gray-300 rounded" />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1.5">Xác nhận lại mật khẩu</label>
-                <input name="confirmPassword" type="password" value={formData.confirmPassword} onChange={handleChange} required className="w-full px-4 py-2.5 border border-gray-300 rounded text-base text-[#333] font-[450]" />
+                <input name="confirmPassword" type="password" value={formData.confirmPassword} onChange={handleChange} required className="w-full px-4 py-2.5 border border-gray-300 rounded" />
               </div>
               <button type="submit" className="w-full bg-[#2453c9] hover:bg-blue-800 text-white font-medium py-3 rounded mt-2">Hoàn Tất Đăng Ký</button>
               <button type="button" onClick={() => switchView('login')} className="w-full text-gray-500 hover:text-gray-700 text-sm mt-3 font-medium">Hủy bỏ</button>
             </form>
           )}
 
-          {/* ==================== MÀN HÌNH KHÔI PHỤC MẬT KHẨU (2 BƯỚC) ==================== */}
+          {/* QUÊN MẬT KHẨU */}
           {currentView === 'forgot' && (
             <div>
-              {/* BƯỚC 1: KIỂM TRA USERNAME */}
+              {/* BƯỚC 1: XÁC MINH CẢ USERNAME LẪN MÃ BÍ MẬT */}
               {forgotStep === 1 && (
-                <form onSubmit={handleCheckUsername} className="space-y-4">
+                <form onSubmit={handleVerifyRecovery} className="space-y-4">
                   <div className="bg-blue-50 text-blue-700 p-4 rounded text-sm mb-4 border border-blue-200">
-                    Thầy/cô vui lòng nhập đúng <b>Tên đăng nhập</b> để hệ thống kiểm tra trước.
+                    Thầy/cô vui lòng cung cấp Tên đăng nhập và Mã bí mật hệ thống để được cấp quyền khôi phục.
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1.5">Tên đăng nhập cần khôi phục</label>
-                    <input name="username" value={formData.username} onChange={handleChange} required className="w-full px-4 py-2.5 border border-gray-300 rounded text-base text-[#333] font-[450]" />
+                    <input name="username" value={formData.username} onChange={handleChange} required className="w-full px-4 py-2.5 border border-gray-300 rounded" />
                   </div>
-                  <button type="submit" className="w-full bg-[#2453c9] hover:bg-blue-800 text-white font-medium py-3 rounded mt-2">Kiểm tra thông tin</button>
-                  <button type="button" onClick={() => switchView('login')} className="w-full text-gray-500 hover:text-gray-700 text-sm mt-3 font-medium">Hủy bỏ</button>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1.5">Mã bí mật hệ thống</label>
+                    <input name="secretPassword" type="password" value={formData.secretPassword} onChange={handleChange} required className="w-full px-4 py-2.5 border border-gray-300 rounded" />
+                  </div>
+                  <button type="submit" className="w-full bg-[#2453c9] hover:bg-blue-800 text-white font-medium py-3 rounded mt-2">Xác minh thông tin</button>
+                  <button type="button" onClick={() => switchView('login')} className="w-full text-gray-500 hover:text-gray-700 text-sm mt-3 font-medium">Trở về Đăng nhập</button>
                 </form>
               )}
 
-              {/* BƯỚC 2: NHẬP PASSWORD MỚI (Sau khi check Username Ok) */}
+              {/* BƯỚC 2: TẠO PASS MỚI */}
               {forgotStep === 2 && (
                 <form onSubmit={handleForgotPass} className="space-y-4">
                   <div className="bg-green-50 text-green-700 p-4 rounded text-sm mb-4 border border-green-200 flex items-center gap-2">
-                    <span className="text-xl">✅</span> Tìm thấy tài khoản: <b>{formData.username}</b>
+                    <span className="text-xl">✅</span> Xác minh thành công tài khoản: <b>{formData.username}</b>
                   </div>
-                  
-                  {/* Ô nhập username bị mờ đi để người dùng biết là đã fix */}
-                  <div className="hidden">
-                    <input name="username" value={formData.username} readOnly />
-                  </div>
-
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1.5">Tạo mật khẩu mới</label>
-                    <input name="password" type="password" value={formData.password} onChange={handleChange} required className="w-full px-4 py-2.5 border border-gray-300 rounded text-base text-[#333] font-[450]" />
+                    <input name="password" type="password" value={formData.password} onChange={handleChange} required className="w-full px-4 py-2.5 border border-gray-300 rounded" />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1.5">Xác nhận mật khẩu mới</label>
-                    <input name="confirmPassword" type="password" value={formData.confirmPassword} onChange={handleChange} required className="w-full px-4 py-2.5 border border-gray-300 rounded text-base text-[#333] font-[450]" />
+                    <input name="confirmPassword" type="password" value={formData.confirmPassword} onChange={handleChange} required className="w-full px-4 py-2.5 border border-gray-300 rounded" />
                   </div>
                   <button type="submit" className="w-full bg-amber-500 hover:bg-amber-600 text-white font-medium py-3 rounded mt-2">Xác nhận Đổi Mật Khẩu</button>
-                  <button type="button" onClick={() => switchView('login')} className="w-full text-gray-500 hover:text-gray-700 text-sm mt-3 font-medium">Trở về Đăng nhập</button>
+                  <button type="button" onClick={() => switchView('login')} className="w-full text-gray-500 hover:text-gray-700 text-sm mt-3 font-medium">Hủy bỏ</button>
                 </form>
               )}
             </div>
@@ -266,7 +266,7 @@ const Auth = ({ onLoginSuccess }) => {
         </div>
       </div>
 
-      {/* ==================== MODAL CẢNH BÁO TRƯỚC KHI CHỐT ĐĂNG KÝ ==================== */}
+      {/* MODAL CẢNH BÁO TRƯỚC KHI CHỐT ĐĂNG KÝ (Giữ nguyên) */}
       {showWarning && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
           <div className="bg-white max-w-md w-full rounded-xl shadow-2xl overflow-hidden animate-fade-in-up">
@@ -286,18 +286,8 @@ const Auth = ({ onLoginSuccess }) => {
               </p>
             </div>
             <div className="p-4 bg-gray-50 flex gap-3 border-t border-gray-100">
-              <button 
-                onClick={() => setShowWarning(false)} 
-                className="flex-1 py-2.5 bg-white border border-gray-300 rounded text-gray-700 font-medium hover:bg-gray-100 transition-colors"
-              >
-                Hủy, tôi cần xem lại
-              </button>
-              <button 
-                onClick={handleFinalRegister} 
-                className="flex-1 py-2.5 bg-red-600 rounded text-white font-medium hover:bg-red-700 shadow-md shadow-red-200 transition-colors"
-              >
-                Đã nhớ & Tạo tài khoản
-              </button>
+              <button onClick={() => setShowWarning(false)} className="flex-1 py-2.5 bg-white border border-gray-300 rounded text-gray-700 font-medium hover:bg-gray-100">Hủy, tôi cần xem lại</button>
+              <button onClick={handleFinalRegister} className="flex-1 py-2.5 bg-red-600 rounded text-white font-medium hover:bg-red-700 shadow-md shadow-red-200">Đã nhớ & Tạo tài khoản</button>
             </div>
           </div>
         </div>

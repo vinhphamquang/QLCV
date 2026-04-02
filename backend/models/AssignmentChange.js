@@ -7,7 +7,7 @@ const AssignmentChangeSchema = new mongoose.Schema({
     required: [true, 'Vui lòng nhập tên môn học'],
     trim: true
   },
-  
+
   // Số tiết (thay đổi)
   lessonCount: {
     type: Number,
@@ -26,14 +26,7 @@ const AssignmentChangeSchema = new mongoose.Schema({
   // Tuần kết thúc áp dụng thay đổi
   endWeek: {
     type: Number,
-    required: [true, 'Vui lòng nhập tuần kết thúc'],
-    // Custom validation: Tuần kết thúc không được nhỏ hơn tuần bắt đầu
-    validate: {
-      validator: function(v) {
-        return v >= this.startWeek;
-      },
-      message: 'Tuần kết thúc phải lớn hơn hoặc bằng tuần bắt đầu'
-    }
+    required: [true, 'Vui lòng nhập tuần kết thúc']
   },
 
   // Ghi chú

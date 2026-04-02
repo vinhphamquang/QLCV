@@ -13,6 +13,7 @@ import ExamPreparation from './pages/ExamPreparation';
 import Notifications from './pages/Notifications';
 import Auth from './components/Auth';
 import AssignmentManagement from './pages/AssignmentManagement';
+import DailyDuty from './pages/DailyDutyManagement';
 // Tạm thời có thể bỏ import ProtectedRoute nếu dùng cách chặn vòng ngoài này
 // import ProtectedRoute from './components/ProtectedRoute'; 
 import './App.css';
@@ -65,6 +66,7 @@ function App() {
               <Route path="/ra-de-kiem-tra" element={<ExamPreparation />} />
               <Route path="/thong-bao" element={<Notifications />} />
               <Route path="/phan-mon-so-tiet" element={<AssignmentManagement />} />
+              <Route path="/quan-ly-truc-ngay" element={<DailyDuty />} />
               
               {/* BẮT LỖI 404: Nếu gõ đường dẫn bậy, tự động văng về trang chủ */}
               <Route path="*" element={<Navigate to="/" replace />} />

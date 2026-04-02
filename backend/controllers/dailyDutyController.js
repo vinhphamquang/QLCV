@@ -46,3 +46,31 @@ exports.deleteDailyDuty = async (req, res) => {
         res.status(500).json({ success: false, message: error.message });
     }
 };
+
+// ==========================================
+// [POST] NHẬP DỮ LIỆU HÀNG LOẠT TỪ EXCEL
+// ==========================================
+exports.importDailyDuties = async (req, res) => {
+    try {
+        const dataArray = req.body; 
+
+        // Kiểm tra xem có gửi mảng lên không và mảng có trống không
+        if (!Array.isArray(dataArray) || dataArray.length === 0) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Dữ liệu không hợp lệ hoặc file Excel trống!' 
+            });
+        }
+
+        // Dùng lệnh insertMany để lưu toàn bộ mảng vào Database
+        const savedData = await DailyDuty.insertMany(dataArray);
+
+        res.status(201).json({ 
+            success: true, 
+            message: `Đã nhập thành công ${savedData.length} dòng dữ liệu trực ban.`,
+            data: savedData
+        });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};

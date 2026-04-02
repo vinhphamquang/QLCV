@@ -12,6 +12,8 @@ router.post('/login', authController.login);
 // Đường dẫn: /api/auth/forgot-password
 router.post('/forgot-password', authController.forgotPassword);
 
-router.post('/check-username', authController.checkUsername);
+router.post('/verify-recovery', authController.verifyRecoveryInfo);
+
+router.post('/verify-system-secret', authController.verifySystemSecret);
 
 module.exports = router;

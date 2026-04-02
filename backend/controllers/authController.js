@@ -47,26 +47,56 @@ exports.forgotPassword = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
-// [POST] Kiểm tra Username có tồn tại không (Dùng cho bước 1 Quên mật khẩu)
-exports.checkUsername = async (req, res) => {
-  const { username } = req.body;
+
+// [POST] Kiểm tra Username và Mã bí mật (Dùng cho Bước 1 Quên mật khẩu)
+exports.verifyRecoveryInfo = async (req, res) => {
+  const { username, secretPassword } = req.body;
   try {
-    // Tìm kiếm username trong DB
-    const user = await User.findOne({ username });
+    // Tìm user và lấy ra secretPassword (vì mặc định đang bị ẩn select: false)
+    const user = await User.findOne({ username }).select('+secretPassword');
     
-    // Nếu không tìm thấy
-    if (!user) {
-      return res.status(404).json({ 
+    // Nếu không có user, hoặc có mà sai mã bí mật -> Đá ra ngay
+    if (!user || !(await user.matchSecretPassword(secretPassword))) {
+      return res.status(401).json({ 
         success: false, 
-        message: 'Tài khoản không tồn tại trong hệ thống!' 
+        message: 'Tài khoản hoặc Mã bí mật không đúng!' 
+      });
+    }
+    
+    // Nếu qua được ải trên tức là chuẩn 100% -> Báo OK để React mở Form đổi Pass
+    res.status(200).json({ 
+      success: true, 
+      message: 'Xác minh thành công' 
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+// [POST] Kiểm tra Mã bí mật hệ thống (Dùng để mở cổng Đăng ký)
+exports.verifySystemSecret = async (req, res) => {
+  const { secretPassword } = req.body;
+  try {
+    // Tìm tài khoản được tạo ĐẦU TIÊN trong hệ thống (Tài khoản gốc của trường)
+    const adminUser = await User.findOne().sort({ createdAt: 1 }).select('+secretPassword');
+    
+    // Nếu DB trống trơn (Chưa có ai đăng ký bao giờ) -> Cho qua luôn để tạo tài khoản đầu tiên
+    if (!adminUser) {
+      return res.status(200).json({ 
+        success: true, 
+        message: 'Hệ thống mới, cho phép tạo tài khoản đầu tiên.' 
       });
     }
 
-    // Nếu tìm thấy, báo OK để Frontend cho qua bước 2
-    res.status(200).json({ 
-      success: true, 
-      message: 'Tài khoản hợp lệ' 
-    });
+    // Nếu đã có tài khoản rồi, bắt buộc phải check mã bí mật với tài khoản gốc
+    if (!(await adminUser.matchSecretPassword(secretPassword))) {
+      return res.status(401).json({ 
+        success: false, 
+        message: 'Mã bí mật hệ thống không đúng, từ chối cấp quyền!' 
+      });
+    }
+    
+    // Mã chuẩn -> Báo OK
+    res.status(200).json({ success: true, message: 'Đã xác minh mã bí mật hệ thống.' });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
