@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import './ExamPreparation.css';
+import ExcelButtons from '../components/ExcelButtons';
 
 function ExamPreparation() {
   const [exams, setExams] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
   const [formData, setFormData] = useState({
     mon: '',
     ngayNop: '',
@@ -86,13 +88,82 @@ function ExamPreparation() {
     setShowForm(false);
   };
 
+  const excelColumns = [
+    { header: 'Môn', key: 'mon' },
+    { header: 'Ngày Nộp', key: 'ngayNop' },
+    { header: 'Người Nộp', key: 'nguoiNop' },
+    { header: 'Người Ra Đề', key: 'nguoiRaDe' },
+    { header: 'Thời Gian Làm Bài', key: 'thoiGianLamBai' },
+    { header: 'Nội Dung Lỗi', key: 'noiDungLoi' },
+    { header: 'Ghi Chú', key: 'ghiChu' }
+  ];
+
+  const handleImportExcel = async (importedData) => {
+    if (!importedData || importedData.length === 0) {
+      alert('File Excel không có dữ liệu!');
+      return;
+    }
+    try {
+      let successCount = 0;
+      let errorCount = 0;
+      for (const item of importedData) {
+        try {
+          await axios.post('http://localhost:5000/api/exam-preparations', item);
+          successCount++;
+        } catch (error) {
+          errorCount++;
+        }
+      }
+      alert(`Nhập thành công ${successCount} bản ghi${errorCount > 0 ? `, ${errorCount} lỗi` : ''}`);
+      fetchExams();
+    } catch (error) {
+      alert('Có lỗi xảy ra!');
+    }
+  };
+
+  const filteredExams = exams.filter(item => {
+    const searchLower = searchTerm.toLowerCase();
+    return (
+      (item.mon || '').toLowerCase().includes(searchLower) ||
+      (item.nguoiNop || '').toLowerCase().includes(searchLower) ||
+      (item.nguoiRaDe || '').toLowerCase().includes(searchLower) ||
+      (item.thoiGianLamBai || '').toLowerCase().includes(searchLower) ||
+      (item.noiDungLoi || '').toLowerCase().includes(searchLower) ||
+      (item.ghiChu || '').toLowerCase().includes(searchLower)
+    );
+  });
+
   return (
     <div className="exam-preparation">
       <div className="header-section">
         <h2>Quản Lý Công Tác Ra Đề Kiểm Tra</h2>
-        <button className="btn-add" onClick={() => setShowForm(!showForm)}>
-          {showForm ? 'Đóng Form' : '+ Thêm Đề Kiểm Tra'}
-        </button>
+        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+          <input
+            type="text"
+            placeholder="🔍 Tìm kiếm..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            style={{
+              padding: '10px 16px',
+              border: '2px solid #e5e7eb',
+              borderRadius: '8px',
+              fontSize: '14px',
+              width: '250px',
+              outline: 'none'
+            }}
+            onFocus={(e) => e.target.style.borderColor = '#2563eb'}
+            onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
+          />
+          <ExcelButtons
+            data={exams}
+            columns={excelColumns}
+            fileName="RaDeKiemTra"
+            onImport={handleImportExcel}
+          />
+          <button className="btn-add" onClick={() => setShowForm(!showForm)}>
+            {showForm ? 'Đóng Form' : '+ Thêm Đề Kiểm Tra'}
+          </button>
+        </div>
       </div>
 
       {showForm && (
@@ -216,7 +287,7 @@ function ExamPreparation() {
             </tr>
           </thead>
           <tbody>
-            {exams.map((exam, index) => (
+            {filteredExams.map((exam, index) => (
               <tr key={exam._id}>
                 <td>{index + 1}</td>
                 <td>{exam.mon}</td>
@@ -239,8 +310,8 @@ function ExamPreparation() {
             ))}
           </tbody>
         </table>
-        {exams.length === 0 && (
-          <p className="no-data">Chưa có dữ liệu đề kiểm tra</p>
+        {filteredExams.length === 0 && (
+          <p className="no-data">{searchTerm ? 'Không tìm thấy kết quả' : 'Chưa có dữ liệu đề kiểm tra'}</p>
         )}
       </div>
     </div>

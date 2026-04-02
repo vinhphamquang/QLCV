@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import './TeacherManagement.css';
+import ExcelButtons from '../components/ExcelButtons';
 
 function TeacherManagement() {
   const [teachers, setTeachers] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
   const [formData, setFormData] = useState({
     hoTen: '',
     noiDungViPham: '',
@@ -85,13 +87,83 @@ function TeacherManagement() {
     });
   };
 
+  // Cấu hình columns cho Excel
+  const excelColumns = [
+    { header: 'Họ Tên', key: 'hoTen' },
+    { header: 'Nội Dung Vi Phạm', key: 'noiDungViPham' },
+    { header: 'Nội Dung Làm Việc Tốt / Tuyên Dương', key: 'noiDungTuyenDuong' },
+    { header: 'Ngày Vắng', key: 'ngayVang' }
+  ];
+
+  // Xử lý import Excel
+  const handleImportExcel = async (importedData) => {
+    if (!importedData || importedData.length === 0) {
+      alert('File Excel không có dữ liệu!');
+      return;
+    }
+
+    try {
+      let successCount = 0;
+      let errorCount = 0;
+
+      for (const item of importedData) {
+        try {
+          await axios.post('http://localhost:5000/api/teachers', item);
+          successCount++;
+        } catch (error) {
+          errorCount++;
+          console.error('Lỗi khi thêm:', item, error);
+        }
+      }
+
+      alert(`Nhập thành công ${successCount} bản ghi${errorCount > 0 ? `, ${errorCount} bản ghi lỗi` : ''}`);
+      fetchTeachers();
+    } catch (error) {
+      alert('Có lỗi xảy ra khi nhập dữ liệu!');
+      console.error(error);
+    }
+  };
+
+  const filteredTeachers = teachers.filter(teacher => {
+    const searchLower = searchTerm.toLowerCase();
+    return (
+      teacher.hoTen.toLowerCase().includes(searchLower) ||
+      (teacher.noiDungViPham || '').toLowerCase().includes(searchLower) ||
+      (teacher.noiDungTuyenDuong || '').toLowerCase().includes(searchLower)
+    );
+  });
+
   return (
     <div className="teacher-management">
       <div className="header-section">
         <h2>Quản Lý Giáo Viên</h2>
-        <button className="btn-add" onClick={() => setShowForm(!showForm)}>
-          {showForm ? 'Đóng Form' : '+ Thêm Giáo Viên'}
-        </button>
+        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+          <input
+            type="text"
+            placeholder="🔍 Tìm kiếm giáo viên..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            style={{
+              padding: '10px 16px',
+              border: '2px solid #e5e7eb',
+              borderRadius: '8px',
+              fontSize: '14px',
+              width: '250px',
+              outline: 'none'
+            }}
+            onFocus={(e) => e.target.style.borderColor = '#2563eb'}
+            onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
+          />
+          <ExcelButtons
+            data={teachers}
+            columns={excelColumns}
+            fileName="DanhSachGiaoVien"
+            onImport={handleImportExcel}
+          />
+          <button className="btn-add" onClick={() => setShowForm(!showForm)}>
+            {showForm ? 'Đóng Form' : '+ Thêm Giáo Viên'}
+          </button>
+        </div>
       </div>
 
       {showForm && (
@@ -161,7 +233,7 @@ function TeacherManagement() {
             </tr>
           </thead>
           <tbody>
-            {teachers.map((teacher, index) => (
+            {filteredTeachers.map((teacher, index) => (
               <tr key={teacher._id}>
                 <td>{index + 1}</td>
                 <td>{teacher.hoTen}</td>
@@ -177,8 +249,8 @@ function TeacherManagement() {
             ))}
           </tbody>
         </table>
-        {teachers.length === 0 && (
-          <p className="no-data">Chưa có dữ liệu giáo viên</p>
+        {filteredTeachers.length === 0 && (
+          <p className="no-data">{searchTerm ? 'Không tìm thấy kết quả' : 'Chưa có dữ liệu giáo viên'}</p>
         )}
       </div>
     </div>

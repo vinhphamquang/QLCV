@@ -5,6 +5,9 @@ const Auth = ({ onLoginSuccess }) => {
   const [currentView, setCurrentView] = useState('login'); 
   const [showWarning, setShowWarning] = useState(false);
   const [forgotStep, setForgotStep] = useState(1);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [showSecretPassword, setShowSecretPassword] = useState(false);
 
   const [formData, setFormData] = useState({
     username: '',
@@ -20,6 +23,9 @@ const Auth = ({ onLoginSuccess }) => {
 
   const resetForm = () => {
     setFormData({ username: '', fullName: '', password: '', confirmPassword: '', secretPassword: '' });
+    setShowPassword(false);
+    setShowConfirmPassword(false);
+    setShowSecretPassword(false);
   };
 
   const switchView = (view) => {
@@ -168,7 +174,23 @@ const Auth = ({ onLoginSuccess }) => {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1.5">Mật khẩu</label>
-                <input name="password" type="password" value={formData.password} onChange={handleChange} required className="w-full px-4 py-2.5 border border-gray-300 rounded focus:border-[#2453c9] focus:ring-1 focus:ring-[#2453c9]" />
+                <div className="relative">
+                  <input 
+                    name="password" 
+                    type={showPassword ? "text" : "password"} 
+                    value={formData.password} 
+                    onChange={handleChange} 
+                    required 
+                    className="w-full px-4 py-2.5 border border-gray-300 rounded focus:border-[#2453c9] focus:ring-1 focus:ring-[#2453c9] pr-10" 
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                  >
+                    {showPassword ? '👁️' : '👁️‍🗨️'}
+                  </button>
+                </div>
               </div>
               <div className="text-right">
                 <button type="button" onClick={() => switchView('forgot')} className="text-sm text-[#2453c9] hover:underline font-medium">Quên mật khẩu?</button>
@@ -188,7 +210,23 @@ const Auth = ({ onLoginSuccess }) => {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1.5">Mã bí mật hệ thống</label>
-                <input name="secretPassword" type="password" value={formData.secretPassword} onChange={handleChange} required className="w-full px-4 py-2.5 border border-gray-300 rounded focus:border-[#2453c9] focus:ring-1 focus:ring-[#2453c9]" />
+                <div className="relative">
+                  <input 
+                    name="secretPassword" 
+                    type={showSecretPassword ? "text" : "password"} 
+                    value={formData.secretPassword} 
+                    onChange={handleChange} 
+                    required 
+                    className="w-full px-4 py-2.5 border border-gray-300 rounded focus:border-[#2453c9] focus:ring-1 focus:ring-[#2453c9] pr-10" 
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowSecretPassword(!showSecretPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                  >
+                    {showSecretPassword ? '👁️' : '👁️‍🗨️'}
+                  </button>
+                </div>
               </div>
               <button type="submit" className="w-full bg-amber-500 hover:bg-amber-600 text-white font-medium py-3 rounded mt-2">Mở Cửa Đăng Ký</button>
               <button type="button" onClick={() => switchView('login')} className="w-full text-gray-500 hover:text-gray-700 text-sm mt-3 font-medium">Trở về Đăng nhập</button>
@@ -209,11 +247,43 @@ const Auth = ({ onLoginSuccess }) => {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1.5">Tạo mật khẩu</label>
-                <input name="password" type="password" value={formData.password} onChange={handleChange} required className="w-full px-4 py-2.5 border border-gray-300 rounded" />
+                <div className="relative">
+                  <input 
+                    name="password" 
+                    type={showPassword ? "text" : "password"} 
+                    value={formData.password} 
+                    onChange={handleChange} 
+                    required 
+                    className="w-full px-4 py-2.5 border border-gray-300 rounded pr-10" 
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                  >
+                    {showPassword ? '👁️' : '👁️‍🗨️'}
+                  </button>
+                </div>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1.5">Xác nhận lại mật khẩu</label>
-                <input name="confirmPassword" type="password" value={formData.confirmPassword} onChange={handleChange} required className="w-full px-4 py-2.5 border border-gray-300 rounded" />
+                <div className="relative">
+                  <input 
+                    name="confirmPassword" 
+                    type={showConfirmPassword ? "text" : "password"} 
+                    value={formData.confirmPassword} 
+                    onChange={handleChange} 
+                    required 
+                    className="w-full px-4 py-2.5 border border-gray-300 rounded pr-10" 
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                  >
+                    {showConfirmPassword ? '👁️' : '👁️‍🗨️'}
+                  </button>
+                </div>
               </div>
               <button type="submit" className="w-full bg-[#2453c9] hover:bg-blue-800 text-white font-medium py-3 rounded mt-2">Hoàn Tất Đăng Ký</button>
               <button type="button" onClick={() => switchView('login')} className="w-full text-gray-500 hover:text-gray-700 text-sm mt-3 font-medium">Hủy bỏ</button>
@@ -235,7 +305,23 @@ const Auth = ({ onLoginSuccess }) => {
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1.5">Mã bí mật hệ thống</label>
-                    <input name="secretPassword" type="password" value={formData.secretPassword} onChange={handleChange} required className="w-full px-4 py-2.5 border border-gray-300 rounded" />
+                    <div className="relative">
+                      <input 
+                        name="secretPassword" 
+                        type={showSecretPassword ? "text" : "password"} 
+                        value={formData.secretPassword} 
+                        onChange={handleChange} 
+                        required 
+                        className="w-full px-4 py-2.5 border border-gray-300 rounded pr-10" 
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowSecretPassword(!showSecretPassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                      >
+                        {showSecretPassword ? '👁️' : '👁️‍🗨️'}
+                      </button>
+                    </div>
                   </div>
                   <button type="submit" className="w-full bg-[#2453c9] hover:bg-blue-800 text-white font-medium py-3 rounded mt-2">Xác minh thông tin</button>
                   <button type="button" onClick={() => switchView('login')} className="w-full text-gray-500 hover:text-gray-700 text-sm mt-3 font-medium">Trở về Đăng nhập</button>
@@ -250,11 +336,43 @@ const Auth = ({ onLoginSuccess }) => {
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1.5">Tạo mật khẩu mới</label>
-                    <input name="password" type="password" value={formData.password} onChange={handleChange} required className="w-full px-4 py-2.5 border border-gray-300 rounded" />
+                    <div className="relative">
+                      <input 
+                        name="password" 
+                        type={showPassword ? "text" : "password"} 
+                        value={formData.password} 
+                        onChange={handleChange} 
+                        required 
+                        className="w-full px-4 py-2.5 border border-gray-300 rounded pr-10" 
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                      >
+                        {showPassword ? '👁️' : '👁️‍🗨️'}
+                      </button>
+                    </div>
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1.5">Xác nhận mật khẩu mới</label>
-                    <input name="confirmPassword" type="password" value={formData.confirmPassword} onChange={handleChange} required className="w-full px-4 py-2.5 border border-gray-300 rounded" />
+                    <div className="relative">
+                      <input 
+                        name="confirmPassword" 
+                        type={showConfirmPassword ? "text" : "password"} 
+                        value={formData.confirmPassword} 
+                        onChange={handleChange} 
+                        required 
+                        className="w-full px-4 py-2.5 border border-gray-300 rounded pr-10" 
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                      >
+                        {showConfirmPassword ? '👁️' : '👁️‍🗨️'}
+                      </button>
+                    </div>
                   </div>
                   <button type="submit" className="w-full bg-amber-500 hover:bg-amber-600 text-white font-medium py-3 rounded mt-2">Xác nhận Đổi Mật Khẩu</button>
                   <button type="button" onClick={() => switchView('login')} className="w-full text-gray-500 hover:text-gray-700 text-sm mt-3 font-medium">Hủy bỏ</button>

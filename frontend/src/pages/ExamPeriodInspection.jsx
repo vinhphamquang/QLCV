@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import './ExamPeriodInspection.css';
+import ExcelButtons from '../components/ExcelButtons';
 
 function ExamPeriodInspection() {
   const [inspections, setInspections] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
   const [formData, setFormData] = useState({
     mon: '',
     ngay: '',
@@ -85,13 +87,78 @@ function ExamPeriodInspection() {
     });
   };
 
+  const excelColumns = [
+    { header: 'Môn', key: 'mon' },
+    { header: 'Ngày', key: 'ngay' },
+    { header: 'Nội Dung Còn Hạn Chế', key: 'noiDungConHanChe' },
+    { header: 'Rút Kinh Nghiệm', key: 'rutKinhNghiem' },
+    { header: 'Ghi Chú', key: 'ghiChu' }
+  ];
+
+  const handleImportExcel = async (importedData) => {
+    if (!importedData || importedData.length === 0) {
+      alert('File Excel không có dữ liệu!');
+      return;
+    }
+    try {
+      let successCount = 0;
+      let errorCount = 0;
+      for (const item of importedData) {
+        try {
+          await axios.post('http://localhost:5000/api/exam-period-inspections', item);
+          successCount++;
+        } catch (error) {
+          errorCount++;
+        }
+      }
+      alert(`Nhập thành công ${successCount} bản ghi${errorCount > 0 ? `, ${errorCount} lỗi` : ''}`);
+      fetchInspections();
+    } catch (error) {
+      alert('Có lỗi xảy ra!');
+    }
+  };
+
+  const filteredInspections = inspections.filter(item => {
+    const searchLower = searchTerm.toLowerCase();
+    return (
+      (item.mon || '').toLowerCase().includes(searchLower) ||
+      (item.noiDungConHanChe || '').toLowerCase().includes(searchLower) ||
+      (item.rutKinhNghiem || '').toLowerCase().includes(searchLower) ||
+      (item.ghiChu || '').toLowerCase().includes(searchLower)
+    );
+  });
+
   return (
     <div className="exam-period-inspection">
       <div className="header-section">
         <h2>Công Tác Kiểm Tra Các Kỳ</h2>
-        <button className="btn-add" onClick={() => setShowForm(!showForm)}>
-          {showForm ? 'Đóng Form' : '+ Thêm Bản Ghi'}
-        </button>
+        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+          <input
+            type="text"
+            placeholder="🔍 Tìm kiếm..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            style={{
+              padding: '10px 16px',
+              border: '2px solid #e5e7eb',
+              borderRadius: '8px',
+              fontSize: '14px',
+              width: '250px',
+              outline: 'none'
+            }}
+            onFocus={(e) => e.target.style.borderColor = '#2563eb'}
+            onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
+          />
+          <ExcelButtons
+            data={inspections}
+            columns={excelColumns}
+            fileName="KiemTraCacKy"
+            onImport={handleImportExcel}
+          />
+          <button className="btn-add" onClick={() => setShowForm(!showForm)}>
+            {showForm ? 'Đóng Form' : '+ Thêm Bản Ghi'}
+          </button>
+        </div>
       </div>
 
       {showForm && (
@@ -177,7 +244,7 @@ function ExamPeriodInspection() {
             </tr>
           </thead>
           <tbody>
-            {inspections.map((inspection, index) => (
+            {filteredInspections.map((inspection, index) => (
               <tr key={inspection._id}>
                 <td>{index + 1}</td>
                 <td>{inspection.mon}</td>
@@ -193,8 +260,8 @@ function ExamPeriodInspection() {
             ))}
           </tbody>
         </table>
-        {inspections.length === 0 && (
-          <p className="no-data">Chưa có dữ liệu kiểm tra các kỳ</p>
+        {filteredInspections.length === 0 && (
+          <p className="no-data">{searchTerm ? 'Không tìm thấy kết quả' : 'Chưa có dữ liệu kiểm tra các kỳ'}</p>
         )}
       </div>
     </div>

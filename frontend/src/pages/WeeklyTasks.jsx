@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import './WeeklyTasks.css';
+import ExcelButtons from '../components/ExcelButtons';
 
 function WeeklyTasks() {
   const [tasks, setTasks] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
   const [formData, setFormData] = useState({
     thu: '',
     noiDungCongViec: '',
@@ -140,13 +142,78 @@ function WeeklyTasks() {
     return '🟢 Bình thường';
   };
 
+  const excelColumns = [
+    { header: 'Thứ', key: 'thu' },
+    { header: 'Nội Dung Công Việc', key: 'noiDungCongViec' },
+    { header: 'Thời Gian', key: 'thoiGian' },
+    { header: 'Địa Điểm', key: 'diaDiem' },
+    { header: 'Ghi Chú', key: 'ghiChu' }
+  ];
+
+  const handleImportExcel = async (importedData) => {
+    if (!importedData || importedData.length === 0) {
+      alert('File Excel không có dữ liệu!');
+      return;
+    }
+    try {
+      let successCount = 0;
+      let errorCount = 0;
+      for (const item of importedData) {
+        try {
+          await axios.post('http://localhost:5000/api/weekly-tasks', item);
+          successCount++;
+        } catch (error) {
+          errorCount++;
+        }
+      }
+      alert(`Nhập thành công ${successCount} bản ghi${errorCount > 0 ? `, ${errorCount} lỗi` : ''}`);
+      fetchTasks();
+    } catch (error) {
+      alert('Có lỗi xảy ra!');
+    }
+  };
+
+  const filteredTasks = tasks.filter(item => {
+    const searchLower = searchTerm.toLowerCase();
+    return (
+      (item.thu || '').toLowerCase().includes(searchLower) ||
+      (item.noiDungCongViec || '').toLowerCase().includes(searchLower) ||
+      (item.diaDiem || '').toLowerCase().includes(searchLower) ||
+      (item.ghiChu || '').toLowerCase().includes(searchLower)
+    );
+  });
+
   return (
     <div className="weekly-tasks">
       <div className="header-section">
         <h2>Công Việc Tuần</h2>
-        <button className="btn-add" onClick={() => setShowForm(!showForm)}>
-          {showForm ? 'Đóng Form' : '+ Thêm Công Việc'}
-        </button>
+        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+          <input
+            type="text"
+            placeholder="🔍 Tìm kiếm..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            style={{
+              padding: '10px 16px',
+              border: '2px solid #e5e7eb',
+              borderRadius: '8px',
+              fontSize: '14px',
+              width: '250px',
+              outline: 'none'
+            }}
+            onFocus={(e) => e.target.style.borderColor = '#2563eb'}
+            onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
+          />
+          <ExcelButtons
+            data={tasks}
+            columns={excelColumns}
+            fileName="CongViecTuan"
+            onImport={handleImportExcel}
+          />
+          <button className="btn-add" onClick={() => setShowForm(!showForm)}>
+            {showForm ? 'Đóng Form' : '+ Thêm Công Việc'}
+          </button>
+        </div>
       </div>
 
       {showForm && (
@@ -241,7 +308,7 @@ function WeeklyTasks() {
             </tr>
           </thead>
           <tbody>
-            {tasks.map((task, index) => (
+            {filteredTasks.map((task, index) => (
               <tr key={task._id} className={`task-row ${getTaskStatus(task)}`}>
                 <td>{index + 1}</td>
                 <td>{task.thu}</td>
@@ -269,8 +336,8 @@ function WeeklyTasks() {
             ))}
           </tbody>
         </table>
-        {tasks.length === 0 && (
-          <p className="no-data">Chưa có công việc nào trong tuần</p>
+        {filteredTasks.length === 0 && (
+          <p className="no-data">{searchTerm ? 'Không tìm thấy kết quả' : 'Chưa có công việc nào trong tuần'}</p>
         )}
       </div>
     </div>

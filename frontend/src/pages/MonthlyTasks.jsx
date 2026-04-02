@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import './MonthlyTasks.css';
+import ExcelButtons from '../components/ExcelButtons';
 
 function MonthlyTasks() {
   const [tasks, setTasks] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
   const [formData, setFormData] = useState({
     tuan: '',
     thu: '',
@@ -91,7 +93,7 @@ function MonthlyTasks() {
   };
 
   // Group tasks by week
-  const groupedTasks = tasks.reduce((acc, task) => {
+  const groupedTasks = filteredTasks.reduce((acc, task) => {
     if (!acc[task.tuan]) {
       acc[task.tuan] = [];
     }
@@ -101,13 +103,80 @@ function MonthlyTasks() {
 
   const weekOrder = ['Tuần 1', 'Tuần 2', 'Tuần 3', 'Tuần 4', 'Tuần 5'];
 
+  const excelColumns = [
+    { header: 'Tuần', key: 'tuan' },
+    { header: 'Thứ', key: 'thu' },
+    { header: 'Nội Dung', key: 'noiDung' },
+    { header: 'Thời Gian', key: 'thoiGian' },
+    { header: 'Giao Việc', key: 'giaoViec' },
+    { header: 'Ghi Chú', key: 'ghiChu' }
+  ];
+
+  const handleImportExcel = async (importedData) => {
+    if (!importedData || importedData.length === 0) {
+      alert('File Excel không có dữ liệu!');
+      return;
+    }
+    try {
+      let successCount = 0;
+      let errorCount = 0;
+      for (const item of importedData) {
+        try {
+          await axios.post('http://localhost:5000/api/monthly-tasks', item);
+          successCount++;
+        } catch (error) {
+          errorCount++;
+        }
+      }
+      alert(`Nhập thành công ${successCount} bản ghi${errorCount > 0 ? `, ${errorCount} lỗi` : ''}`);
+      fetchTasks();
+    } catch (error) {
+      alert('Có lỗi xảy ra!');
+    }
+  };
+
+  const filteredTasks = tasks.filter(item => {
+    const searchLower = searchTerm.toLowerCase();
+    return (
+      (item.tuan || '').toLowerCase().includes(searchLower) ||
+      (item.thu || '').toLowerCase().includes(searchLower) ||
+      (item.noiDung || '').toLowerCase().includes(searchLower) ||
+      (item.giaoViec || '').toLowerCase().includes(searchLower) ||
+      (item.ghiChu || '').toLowerCase().includes(searchLower)
+    );
+  });
+
   return (
     <div className="monthly-tasks">
       <div className="header-section">
         <h2>Công Việc Tháng</h2>
-        <button className="btn-add" onClick={() => setShowForm(!showForm)}>
-          {showForm ? 'Đóng Form' : '+ Thêm Công Việc'}
-        </button>
+        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+          <input
+            type="text"
+            placeholder="🔍 Tìm kiếm..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            style={{
+              padding: '10px 16px',
+              border: '2px solid #e5e7eb',
+              borderRadius: '8px',
+              fontSize: '14px',
+              width: '250px',
+              outline: 'none'
+            }}
+            onFocus={(e) => e.target.style.borderColor = '#2563eb'}
+            onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
+          />
+          <ExcelButtons
+            data={tasks}
+            columns={excelColumns}
+            fileName="CongViecThang"
+            onImport={handleImportExcel}
+          />
+          <button className="btn-add" onClick={() => setShowForm(!showForm)}>
+            {showForm ? 'Đóng Form' : '+ Thêm Công Việc'}
+          </button>
+        </div>
       </div>
 
       {showForm && (
@@ -246,8 +315,8 @@ function MonthlyTasks() {
           )
         ))}
         
-        {tasks.length === 0 && (
-          <p className="no-data">Chưa có công việc nào trong tháng</p>
+        {filteredTasks.length === 0 && (
+          <p className="no-data">{searchTerm ? 'Không tìm thấy kết quả' : 'Chưa có công việc nào trong tháng'}</p>
         )}
       </div>
     </div>

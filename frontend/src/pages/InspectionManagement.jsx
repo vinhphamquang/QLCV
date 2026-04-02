@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import './InspectionManagement.css';
+import ExcelButtons from '../components/ExcelButtons';
 
 function InspectionManagement() {
   const [inspections, setInspections] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
   const [formData, setFormData] = useState({
     thang: '',
     tenGiaoVien: '',
@@ -93,13 +95,80 @@ function InspectionManagement() {
     });
   };
 
+  const excelColumns = [
+    { header: 'Tháng', key: 'thang' },
+    { header: 'Tên Giáo Viên', key: 'tenGiaoVien' },
+    { header: 'Nội Dung Kiểm Tra', key: 'noiDungKiemTra' },
+    { header: 'Tiết Kiểm Tra', key: 'tietKiemTra' },
+    { header: 'Thời Gian Kiểm Tra', key: 'thoiGianKiemTra' },
+    { header: 'Đánh Giá', key: 'danhGia' },
+    { header: 'Rút Kinh Nghiệm', key: 'rutKinhNghiem' }
+  ];
+
+  const handleImportExcel = async (importedData) => {
+    if (!importedData || importedData.length === 0) {
+      alert('File Excel không có dữ liệu!');
+      return;
+    }
+    try {
+      let successCount = 0;
+      let errorCount = 0;
+      for (const item of importedData) {
+        try {
+          await axios.post('http://localhost:5000/api/inspections', item);
+          successCount++;
+        } catch (error) {
+          errorCount++;
+        }
+      }
+      alert(`Nhập thành công ${successCount} bản ghi${errorCount > 0 ? `, ${errorCount} lỗi` : ''}`);
+      fetchInspections();
+    } catch (error) {
+      alert('Có lỗi xảy ra!');
+    }
+  };
+
+  const filteredInspections = inspections.filter(item => {
+    const searchLower = searchTerm.toLowerCase();
+    return (
+      (item.tenGiaoVien || '').toLowerCase().includes(searchLower) ||
+      (item.noiDungKiemTra || '').toLowerCase().includes(searchLower) ||
+      (item.thang || '').toLowerCase().includes(searchLower) ||
+      (item.tietKiemTra || '').toLowerCase().includes(searchLower)
+    );
+  });
+
   return (
     <div className="inspection-management">
       <div className="header-section">
         <h2>Quản Lý Công Tác Kiểm Tra Nội Bộ</h2>
-        <button className="btn-add" onClick={() => setShowForm(!showForm)}>
-          {showForm ? 'Đóng Form' : '+ Thêm Bản Ghi'}
-        </button>
+        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+          <input
+            type="text"
+            placeholder="🔍 Tìm kiếm..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            style={{
+              padding: '10px 16px',
+              border: '2px solid #e5e7eb',
+              borderRadius: '8px',
+              fontSize: '14px',
+              width: '250px',
+              outline: 'none'
+            }}
+            onFocus={(e) => e.target.style.borderColor = '#2563eb'}
+            onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
+          />
+          <ExcelButtons
+            data={inspections}
+            columns={excelColumns}
+            fileName="KiemTraNoiBo"
+            onImport={handleImportExcel}
+          />
+          <button className="btn-add" onClick={() => setShowForm(!showForm)}>
+            {showForm ? 'Đóng Form' : '+ Thêm Bản Ghi'}
+          </button>
+        </div>
       </div>
 
       {showForm && (
@@ -207,7 +276,7 @@ function InspectionManagement() {
             </tr>
           </thead>
           <tbody>
-            {inspections.map((inspection, index) => (
+            {filteredInspections.map((inspection, index) => (
               <tr key={inspection._id}>
                 <td>{index + 1}</td>
                 <td>{inspection.thang}</td>
@@ -225,8 +294,8 @@ function InspectionManagement() {
             ))}
           </tbody>
         </table>
-        {inspections.length === 0 && (
-          <p className="no-data">Chưa có dữ liệu kiểm tra nội bộ</p>
+        {filteredInspections.length === 0 && (
+          <p className="no-data">{searchTerm ? 'Không tìm thấy kết quả' : 'Chưa có dữ liệu kiểm tra nội bộ'}</p>
         )}
       </div>
     </div>

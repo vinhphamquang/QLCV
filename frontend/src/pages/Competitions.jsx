@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import './Competitions.css';
+import ExcelButtons from '../components/ExcelButtons';
 
 function Competitions() {
   const [competitions, setCompetitions] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
   const [formData, setFormData] = useState({
     tenHoiThi: '',
     giaoViec: '',
@@ -82,13 +84,76 @@ function Competitions() {
     });
   };
 
+  const excelColumns = [
+    { header: 'Tên Hội Thi', key: 'tenHoiThi' },
+    { header: 'Giao Việc', key: 'giaoViec' },
+    { header: 'Thời Gian Hoàn Thành', key: 'thoiGianHoanThanh' },
+    { header: 'Thời Gian Tham Gia Các Cấp', key: 'thoiGianThamGiaCacCap' }
+  ];
+
+  const handleImportExcel = async (importedData) => {
+    if (!importedData || importedData.length === 0) {
+      alert('File Excel không có dữ liệu!');
+      return;
+    }
+    try {
+      let successCount = 0;
+      let errorCount = 0;
+      for (const item of importedData) {
+        try {
+          await axios.post('http://localhost:5000/api/competitions', item);
+          successCount++;
+        } catch (error) {
+          errorCount++;
+        }
+      }
+      alert(`Nhập thành công ${successCount} bản ghi${errorCount > 0 ? `, ${errorCount} lỗi` : ''}`);
+      fetchCompetitions();
+    } catch (error) {
+      alert('Có lỗi xảy ra!');
+    }
+  };
+
+  const filteredCompetitions = competitions.filter(item => {
+    const searchLower = searchTerm.toLowerCase();
+    return (
+      (item.tenHoiThi || '').toLowerCase().includes(searchLower) ||
+      (item.giaoViec || '').toLowerCase().includes(searchLower) ||
+      (item.thoiGianThamGiaCacCap || '').toLowerCase().includes(searchLower)
+    );
+  });
+
   return (
     <div className="competitions">
       <div className="header-section">
         <h2>Quản Lý Hội Thi</h2>
-        <button className="btn-add" onClick={() => setShowForm(!showForm)}>
-          {showForm ? 'Đóng Form' : '+ Thêm Hội Thi'}
-        </button>
+        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+          <input
+            type="text"
+            placeholder="🔍 Tìm kiếm..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            style={{
+              padding: '10px 16px',
+              border: '2px solid #e5e7eb',
+              borderRadius: '8px',
+              fontSize: '14px',
+              width: '250px',
+              outline: 'none'
+            }}
+            onFocus={(e) => e.target.style.borderColor = '#2563eb'}
+            onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
+          />
+          <ExcelButtons
+            data={competitions}
+            columns={excelColumns}
+            fileName="HoiThi"
+            onImport={handleImportExcel}
+          />
+          <button className="btn-add" onClick={() => setShowForm(!showForm)}>
+            {showForm ? 'Đóng Form' : '+ Thêm Hội Thi'}
+          </button>
+        </div>
       </div>
 
       {showForm && (
@@ -163,7 +228,7 @@ function Competitions() {
             </tr>
           </thead>
           <tbody>
-            {competitions.map((competition, index) => (
+            {filteredCompetitions.map((competition, index) => (
               <tr key={competition._id}>
                 <td>{index + 1}</td>
                 <td>{competition.tenHoiThi}</td>
@@ -178,8 +243,8 @@ function Competitions() {
             ))}
           </tbody>
         </table>
-        {competitions.length === 0 && (
-          <p className="no-data">Chưa có hội thi nào</p>
+        {filteredCompetitions.length === 0 && (
+          <p className="no-data">{searchTerm ? 'Không tìm thấy kết quả' : 'Chưa có hội thi nào'}</p>
         )}
       </div>
     </div>
