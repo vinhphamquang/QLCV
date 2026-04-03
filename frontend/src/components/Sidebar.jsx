@@ -57,10 +57,10 @@ function Sidebar({ onLogout, isOpen, closeSidebar }) { // <-- Nhận props isOpe
   return (
     <aside className={`
       /* Cấu trúc Layout cơ bản */
-      w-[280px] bg-white border-r border-gray-200 flex flex-col h-full flex-shrink-0 transition-transform duration-300 ease-in-out
+      w-[280px] bg-white border-r border-gray-200 flex flex-col flex-shrink-0 transition-transform duration-300 ease-in-out
       
-      /* Responsive: Trên Mobile là Fixed lơ lửng, trên PC là Relative nằm cố định */
-      fixed inset-y-0 left-0 z-[60] md:relative md:translate-x-0 md:flex
+      /* Responsive: Trên Mobile là Fixed lơ lửng, trên PC là dính trong flex container */
+      fixed top-0 bottom-0 left-0 z-[60] md:relative md:top-auto md:bottom-auto md:left-auto md:translate-x-0 md:flex md:h-full
       
       /* Logic ẩn hiện trên Mobile bằng biến isOpen */
       ${isOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full md:translate-x-0'}

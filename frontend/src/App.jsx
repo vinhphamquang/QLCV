@@ -73,20 +73,20 @@ function App() {
     <Router>
       <div className="flex flex-col h-screen w-full bg-gray-50 font-sans overflow-hidden">
         
-        {/* 1. HEADER NẰM TRÊN CÙNG: Truyền hàm toggleSidebar vào */}
+        {/* 1. HEADER NẰM TRÊN CÙNG */}
         <Header onLogout={handleLogout} toggleSidebar={toggleSidebar} />
         
-        {/* 2. KHU VỰC BÊN DƯỚI: Chứa Sidebar (Trái) và Nội dung (Phải) */}
-        <div className="flex flex-1 overflow-hidden relative">
+        {/* 2. KHU VỰC GIỮA: Sidebar (Trái) + Nội dung (Phải) */}
+        <div className="flex flex-1 overflow-hidden relative min-h-0">
           
-          {/* SIDEBAR: Truyền trạng thái isOpen và hàm đóng vào */}
+          {/* SIDEBAR */}
           <Sidebar 
             onLogout={handleLogout} 
             isOpen={isSidebarOpen} 
             closeSidebar={closeSidebar} 
           /> 
           
-          {/* LỚP PHỦ (OVERLAY): Chỉ hiện trên Mobile khi mở Sidebar */}
+          {/* LỚP PHỦ MOBILE */}
           {isSidebarOpen && (
             <div 
               className="fixed inset-0 bg-black/40 z-[55] md:hidden backdrop-blur-[2px] transition-opacity duration-300"
@@ -94,11 +94,9 @@ function App() {
             ></div>
           )}
           
-          {/* NỘI DUNG CHÍNH */}
+          {/* NỘI DUNG CHÍNH - scroll riêng, không bao gồm footer */}
           <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 p-4 md:p-6 lg:p-8">
-            
-            {/* CARD TRẮNG: Bọc lấy toàn bộ nội dung trang để tạo độ nổi khối */}
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-200/60 p-4 md:p-6 min-h-[calc(100vh-140px)]">
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-200/60 p-4 md:p-6">
               <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/ho-so" element={<Profile />} />
@@ -122,13 +120,13 @@ function App() {
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
             </div>
-            
-            {/* FOOTER */}
-            <Footer />
-            
           </main>
           
         </div>
+
+        {/* 3. FOOTER NẰM CUỐI - full width, dưới cả sidebar lẫn content */}
+        <Footer />
+
       </div>
     </Router>
   );
