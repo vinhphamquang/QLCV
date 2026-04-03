@@ -1,0 +1,140 @@
+/* Common Button Styles - Đồng bộ cho tất cả các trang */
+
+/* Nút chính (Thêm mới, Submit) */
+.btn-add,
+.btn-submit,
+.btn-primary {
+  background: #2563eb;
+  color: white;
+  border: 2px solid #2563eb;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 160px;
+  justify-content: center;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.btn-add:hover,
+.btn-submit:hover,
+.btn-primary:hover {
+  background: #1e40af;
+  border-color: #1e40af;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(37, 99, 235, 0.3);
+}
+
+/* Nút hủy/Cancel */
+.btn-cancel {
+  background: white;
+  color: #374151;
+  border: 2px solid #d1d5db;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  min-width: 120px;
+}
+
+.btn-cancel:hover {
+  background: #f9fafb;
+  border-color: #9ca3af;
+}
+
+/* Nút Sửa */
+.btn-edit {
+  background: #f59e0b;
+  color: white;
+  border: 2px solid #f59e0b;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-right: 0.5rem;
+}
+
+.btn-edit:hover {
+  background: #d97706;
+  border-color: #d97706;
+  transform: translateY(-1px);
+}
+
+/* Nút Xóa */
+.btn-delete {
+  background: #ef4444;
+  color: white;
+  border: 2px solid #ef4444;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-delete:hover {
+  background: #dc2626;
+  border-color: #dc2626;
+  transform: translateY(-1px);
+}
+
+/* Nút hoàn thành (cho Weekly Tasks) */
+.btn-complete {
+  background: #10b981;
+  color: white;
+  border: 2px solid #10b981;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-right: 0.5rem;
+}
+
+.btn-complete:hover {
+  background: #059669;
+  border-color: #059669;
+}
+
+.btn-complete.completed {
+  background: #6b7280;
+  border-color: #6b7280;
+}
+
+/* Responsive cho mobile */
+@media (max-width: 768px) {
+  .btn-add,
+  .btn-submit,
+  .btn-primary {
+    min-width: unset;
+    flex: 1;
+    font-size: 13px;
+    padding: 8px 12px;
+  }
+
+  .btn-cancel {
+    min-width: unset;
+    flex: 1;
+    font-size: 13px;
+    padding: 8px 12px;
+  }
+
+  .btn-edit,
+  .btn-delete,
+  .btn-complete {
+    padding: 6px 12px;
+    font-size: 12px;
+    margin-right: 0.3rem;
+  }
+}

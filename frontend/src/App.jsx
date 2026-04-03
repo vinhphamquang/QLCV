@@ -5,6 +5,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
 import Auth from './components/Auth';
+import Footer from './components/Footer';
 
 // --- IMPORT PAGES ---
 import Home from './pages/Home';
@@ -18,6 +19,11 @@ import Competitions from './pages/Competitions';
 import ExamPreparation from './pages/ExamPreparation';
 import Notifications from './pages/Notifications';
 import AssignmentManagement from './pages/AssignmentManagement';
+
+// --- IMPORT STYLES ---
+import './App.css';
+import './styles/buttons.css';
+import './styles/header.css';
 import DailyDuty from './pages/DailyDutyManagement';
 import TimetableManagement from './pages/TimetableManagement';
 import HolidayManagement from './pages/HolidayManagement';
@@ -116,6 +122,9 @@ function App() {
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
             </div>
+            
+            {/* FOOTER */}
+            <Footer />
             
           </main>
           

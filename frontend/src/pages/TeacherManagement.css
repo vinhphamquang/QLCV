@@ -4,14 +4,98 @@
 
 .header-section {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
+  gap: 1rem;
   margin-bottom: 2rem;
 }
 
 .header-section h2 {
   color: #2563eb;
   font-size: 2rem;
+  margin: 0;
+}
+
+.header-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.search-input {
+  padding: 10px 16px;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
+  fontSize: 14px;
+  width: 100%;
+  max-width: 400px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.search-input:focus {
+  border-color: #2563eb;
+}
+
+.button-group {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .teacher-management {
+    padding: 1rem;
+  }
+
+  .header-section h2 {
+    font-size: 1.5rem;
+  }
+
+  .header-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .search-input {
+    max-width: 100%;
+  }
+
+  .button-group {
+    flex-wrap: wrap;
+  }
+
+  .button-group > * {
+    flex: 1;
+    min-width: 140px;
+  }
+
+  .table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .teacher-table {
+    min-width: 800px;
+  }
+
+  .teacher-table th,
+  .teacher-table td {
+    padding: 0.75rem 0.5rem;
+    font-size: 0.875rem;
+  }
+
+  .form-container {
+    padding: 1rem;
+  }
+
+  .btn-edit,
+  .btn-delete {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.8rem;
+  }
 }
 
 .btn-add {
@@ -85,37 +169,6 @@
   margin-top: 2rem;
 }
 
-.btn-submit {
-  background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
-  color: white;
-  border: none;
-  padding: 0.8rem 2rem;
-  border-radius: 5px;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: all 0.3s;
-}
-
-.btn-submit:hover {
-  background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%);
-  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
-}
-
-.btn-cancel {
-  background: #e0e0e0;
-  color: #333;
-  border: none;
-  padding: 0.8rem 2rem;
-  border-radius: 5px;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: background 0.3s;
-}
-
-.btn-cancel:hover {
-  background: #d0d0d0;
-}
-
 .table-container {
   background: white;
   border-radius: 10px;
@@ -147,37 +200,6 @@
 
 .teacher-table tbody tr:hover {
   background-color: #f8f9ff;
-}
-
-.btn-edit,
-.btn-delete {
-  padding: 0.5rem 1rem;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  margin-right: 0.5rem;
-  font-size: 0.9rem;
-  transition: transform 0.2s;
-}
-
-.btn-edit {
-  background: #2563eb;
-  color: white;
-}
-
-.btn-edit:hover {
-  background: #1e40af;
-  transform: translateY(-2px);
-}
-
-.btn-delete {
-  background: #f44336;
-  color: white;
-}
-
-.btn-delete:hover {
-  background: #da190b;
-  transform: translateY(-2px);
 }
 
 .no-data {

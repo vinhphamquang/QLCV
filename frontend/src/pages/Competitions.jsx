@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import './Competitions.css';
 import ExcelButtons from '../components/ExcelButtons';
+import Modal from '../components/Modal';
 
 function Competitions() {
   const [competitions, setCompetitions] = useState([]);
@@ -127,38 +128,34 @@ function Competitions() {
     <div className="competitions">
       <div className="header-section">
         <h2>Quản Lý Hội Thi</h2>
-        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+        <div className="header-controls">
           <input
             type="text"
             placeholder="🔍 Tìm kiếm..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            style={{
-              padding: '10px 16px',
-              border: '2px solid #e5e7eb',
-              borderRadius: '8px',
-              fontSize: '14px',
-              width: '250px',
-              outline: 'none'
-            }}
-            onFocus={(e) => e.target.style.borderColor = '#2563eb'}
-            onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
+            className="search-input"
           />
-          <ExcelButtons
-            data={competitions}
-            columns={excelColumns}
-            fileName="HoiThi"
-            onImport={handleImportExcel}
-          />
-          <button className="btn-add" onClick={() => setShowForm(!showForm)}>
-            {showForm ? 'Đóng Form' : '+ Thêm Hội Thi'}
-          </button>
+          <div className="button-group">
+            <ExcelButtons
+              data={competitions}
+              columns={excelColumns}
+              fileName="HoiThi"
+              onImport={handleImportExcel}
+            />
+            <button className="btn-add" onClick={() => setShowForm(!showForm)}>
+              + Thêm Hội Thi
+            </button>
+          </div>
         </div>
       </div>
 
       {showForm && (
-        <div className="form-container">
-          <h3>{editingId ? 'Chỉnh Sửa Hội Thi' : 'Thêm Hội Thi Mới'}</h3>
+        <Modal 
+          isOpen={showForm} 
+          onClose={resetForm}
+          title={editingId ? 'Chỉnh Sửa Hội Thi' : 'Thêm Hội Thi Mới'}
+        >
           <form onSubmit={handleSubmit}>
             <div className="form-group">
               <label>Tên Hội Thi *</label>
@@ -212,7 +209,7 @@ function Competitions() {
               </button>
             </div>
           </form>
-        </div>
+        </Modal>
       )}
 
       <div className="table-container">

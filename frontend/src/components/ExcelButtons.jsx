@@ -69,9 +69,9 @@ const ExcelButtons = ({ data, columns, fileName, onImport }) => {
         onClick={handleExport}
         style={{
           padding: '10px 20px',
-          backgroundColor: '#10b981',
-          color: 'white',
-          border: 'none',
+          backgroundColor: 'white',
+          color: '#10b981',
+          border: '2px solid #10b981',
           borderRadius: '8px',
           cursor: 'pointer',
           fontWeight: '600',
@@ -81,7 +81,16 @@ const ExcelButtons = ({ data, columns, fileName, onImport }) => {
           gap: '8px',
           minWidth: '160px',
           justifyContent: 'center',
-          boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+          boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+          transition: 'all 0.2s'
+        }}
+        onMouseEnter={(e) => {
+          e.target.style.backgroundColor = '#f0fdf4';
+          e.target.style.transform = 'translateY(-1px)';
+        }}
+        onMouseLeave={(e) => {
+          e.target.style.backgroundColor = 'white';
+          e.target.style.transform = 'translateY(0)';
         }}
       >
         📊 Xuất Excel
@@ -90,9 +99,9 @@ const ExcelButtons = ({ data, columns, fileName, onImport }) => {
       <label
         style={{
           padding: '10px 20px',
-          backgroundColor: '#10b981',
-          color: 'white',
-          border: 'none',
+          backgroundColor: 'white',
+          color: '#10b981',
+          border: '2px solid #10b981',
           borderRadius: '8px',
           cursor: 'pointer',
           fontWeight: '600',
@@ -102,7 +111,16 @@ const ExcelButtons = ({ data, columns, fileName, onImport }) => {
           gap: '8px',
           minWidth: '160px',
           justifyContent: 'center',
-          boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+          boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+          transition: 'all 0.2s'
+        }}
+        onMouseEnter={(e) => {
+          e.target.style.backgroundColor = '#f0fdf4';
+          e.target.style.transform = 'translateY(-1px)';
+        }}
+        onMouseLeave={(e) => {
+          e.target.style.backgroundColor = 'white';
+          e.target.style.transform = 'translateY(0)';
         }}
       >
         📥 Nhập Excel

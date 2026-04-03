@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import './ExamPreparation.css';
 import ExcelButtons from '../components/ExcelButtons';
+import Modal from '../components/Modal';
 
 function ExamPreparation() {
   const [exams, setExams] = useState([]);
@@ -137,38 +138,34 @@ function ExamPreparation() {
     <div className="exam-preparation">
       <div className="header-section">
         <h2>Quản Lý Công Tác Ra Đề Kiểm Tra</h2>
-        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+        <div className="header-controls">
           <input
             type="text"
             placeholder="🔍 Tìm kiếm..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            style={{
-              padding: '10px 16px',
-              border: '2px solid #e5e7eb',
-              borderRadius: '8px',
-              fontSize: '14px',
-              width: '250px',
-              outline: 'none'
-            }}
-            onFocus={(e) => e.target.style.borderColor = '#2563eb'}
-            onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
+            className="search-input"
           />
-          <ExcelButtons
-            data={exams}
-            columns={excelColumns}
-            fileName="RaDeKiemTra"
-            onImport={handleImportExcel}
-          />
-          <button className="btn-add" onClick={() => setShowForm(!showForm)}>
-            {showForm ? 'Đóng Form' : '+ Thêm Đề Kiểm Tra'}
-          </button>
+          <div className="button-group">
+            <ExcelButtons
+              data={exams}
+              columns={excelColumns}
+              fileName="RaDeKiemTra"
+              onImport={handleImportExcel}
+            />
+            <button className="btn-add" onClick={() => setShowForm(!showForm)}>
+              + Thêm Đề Kiểm Tra
+            </button>
+          </div>
         </div>
       </div>
 
       {showForm && (
-        <div className="form-container">
-          <h3>{editingId ? 'Chỉnh Sửa Đề Kiểm Tra' : 'Thêm Đề Kiểm Tra Mới'}</h3>
+        <Modal 
+          isOpen={showForm} 
+          onClose={resetForm}
+          title={editingId ? 'Chỉnh Sửa Đề Kiểm Tra' : 'Thêm Đề Kiểm Tra Mới'}
+        >
           <form onSubmit={handleSubmit}>
             <div className="form-row">
               <div className="form-group">
@@ -267,7 +264,7 @@ function ExamPreparation() {
               </button>
             </div>
           </form>
-        </div>
+        </Modal>
       )}
 
       <div className="table-container">

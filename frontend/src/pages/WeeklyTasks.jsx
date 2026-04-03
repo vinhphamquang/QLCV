@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import './WeeklyTasks.css';
 import ExcelButtons from '../components/ExcelButtons';
+import Modal from '../components/Modal';
 
 function WeeklyTasks() {
   const [tasks, setTasks] = useState([]);
@@ -187,38 +188,34 @@ function WeeklyTasks() {
     <div className="weekly-tasks">
       <div className="header-section">
         <h2>Công Việc Tuần</h2>
-        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+        <div className="header-controls">
           <input
             type="text"
             placeholder="🔍 Tìm kiếm..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            style={{
-              padding: '10px 16px',
-              border: '2px solid #e5e7eb',
-              borderRadius: '8px',
-              fontSize: '14px',
-              width: '250px',
-              outline: 'none'
-            }}
-            onFocus={(e) => e.target.style.borderColor = '#2563eb'}
-            onBlur={(e) => e.target.style.borderColor = '#e5e7eb'}
+            className="search-input"
           />
-          <ExcelButtons
-            data={tasks}
-            columns={excelColumns}
-            fileName="CongViecTuan"
-            onImport={handleImportExcel}
-          />
-          <button className="btn-add" onClick={() => setShowForm(!showForm)}>
-            {showForm ? 'Đóng Form' : '+ Thêm Công Việc'}
-          </button>
+          <div className="button-group">
+            <ExcelButtons
+              data={tasks}
+              columns={excelColumns}
+              fileName="CongViecTuan"
+              onImport={handleImportExcel}
+            />
+            <button className="btn-add" onClick={() => setShowForm(!showForm)}>
+              + Thêm Công Việc
+            </button>
+          </div>
         </div>
       </div>
 
       {showForm && (
-        <div className="form-container">
-          <h3>{editingId ? 'Chỉnh Sửa Công Việc' : 'Thêm Công Việc Mới'}</h3>
+        <Modal 
+          isOpen={showForm} 
+          onClose={resetForm}
+          title={editingId ? 'Chỉnh Sửa Công Việc' : 'Thêm Công Việc Mới'}
+        >
           <form onSubmit={handleSubmit}>
             <div className="form-row">
               <div className="form-group">
@@ -290,7 +287,7 @@ function WeeklyTasks() {
               </button>
             </div>
           </form>
-        </div>
+        </Modal>
       )}
 
       <div className="table-container">
