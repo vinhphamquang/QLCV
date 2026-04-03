@@ -32,7 +32,7 @@ const holidayRoutes = require('./routes/holidayRoutes');
 const keyActivityRoutes = require('./routes/keyActivityRoutes');
 const authRoutes = require('./routes/authRoutes');
 
-
+//api
 app.use('/api/teachers', teacherRoutes);
 app.use('/api/inspections', inspectionRoutes);
 app.use('/api/exam-preparations', examPreparationRoutes);

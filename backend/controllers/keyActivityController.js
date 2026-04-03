@@ -65,3 +65,25 @@ exports.deleteKeyActivity = async (req, res) => {
         res.status(500).json({ success: false, message: error.message });
     }
 };
+// ==========================================
+// [POST] NHẬP DỮ LIỆU HÀNG LOẠT TỪ EXCEL
+// ==========================================
+exports.importKeyActivities = async (req, res) => {
+    try {
+        const dataArray = req.body; 
+
+        if (!Array.isArray(dataArray) || dataArray.length === 0) {
+            return res.status(400).json({ success: false, message: 'Dữ liệu không hợp lệ hoặc file Excel trống!' });
+        }
+
+        const savedData = await KeyActivity.insertMany(dataArray);
+
+        res.status(201).json({ 
+            success: true, 
+            message: `Đã nhập thành công ${savedData.length} dòng hoạt động trọng điểm.`,
+            data: savedData
+        });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};

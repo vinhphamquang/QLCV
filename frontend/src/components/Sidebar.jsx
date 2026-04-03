@@ -2,7 +2,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import './Sidebar.css';
 
-function Sidebar({ onLogout }) { // <-- Nhận prop onLogout từ App.jsx truyền xuống
+function Sidebar({ onLogout }) {
   const location = useLocation();
   const [openMenu, setOpenMenu] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -59,7 +59,6 @@ function Sidebar({ onLogout }) { // <-- Nhận prop onLogout từ App.jsx truy�
         />
       </form>
 
-      {/* Bao bọc nav trong một thẻ div có flex-grow để đẩy nút Đăng xuất xuống đáy */}
       <div className="sidebar-nav-container" style={{ display: 'flex', flexDirection: 'column', flexGrow: 1, overflowY: 'auto' }}>
         <nav className="sidebar-nav">
           <Link to="/" className={`sidebar-item ${isActive('/')} ${highlightText('Trang Chủ') ? 'highlight' : ''}`}>
@@ -67,6 +66,12 @@ function Sidebar({ onLogout }) { // <-- Nhận prop onLogout từ App.jsx truy�
             <span className="sidebar-text">Trang Chủ</span>
           </Link>
 
+          <Link to="/thong-bao" className={`sidebar-item ${isActive('/thong-bao')} ${highlightText('Thông Báo') ? 'highlight' : ''}`}>
+            <span className="sidebar-icon">🔔</span>
+            <span className="sidebar-text">Thông Báo</span>
+            <span className="notification-dot"></span>
+          </Link>
+          
           <Link to="/quan-ly-giao-vien" className={`sidebar-item ${isActive('/quan-ly-giao-vien')} ${highlightText('Quản Lý Giáo Viên') ? 'highlight' : ''}`}>
             <span className="sidebar-icon">👨‍🏫</span>
             <span className="sidebar-text">Quản Lý Giáo Viên</span>
@@ -84,7 +89,6 @@ function Sidebar({ onLogout }) { // <-- Nhận prop onLogout từ App.jsx truy�
             </button>
             {openMenu === 'kiemtra' && (
               <div className="sidebar-submenu">
-                {/* Đổi Icon Kiểm tra nội bộ thành 📊 */}
                 <Link to="/kiem-tra-noi-bo" className={`sidebar-subitem ${isActive('/kiem-tra-noi-bo')} ${highlightText('Kiểm Tra Nội Bộ') ? 'highlight' : ''}`}>
                   <span className="sidebar-icon">📊</span>
                   <span className="sidebar-text">Kiểm Tra Nội Bộ</span>
@@ -136,25 +140,45 @@ function Sidebar({ onLogout }) { // <-- Nhận prop onLogout từ App.jsx truy�
             <span className="sidebar-text">Ra Đề Kiểm Tra</span>
           </Link>
 
-          {/* Sửa lại isActive, icon 📚 và highlightText cho Phân môn số tiết */}
           <Link to="/phan-mon-so-tiet" className={`sidebar-item ${isActive('/phan-mon-so-tiet')} ${highlightText('Phân môn') || highlightText('số tiết') ? 'highlight' : ''}`}>
             <span className="sidebar-icon">📚</span>
             <span className="sidebar-text">Phân môn số tiết</span>
           </Link>
 
-          <Link to="/quan-ly-truc-ngay" className={`sidebar-item ${isActive('/phan-mon-so-tiet')} ${highlightText('Phân môn') || highlightText('số tiết') ? 'highlight' : ''}`}>
-            <span className="sidebar-icon">📚</span>
+          {/* ĐÃ FIX LINK, TỪ KHÓA TÌM KIẾM VÀ ICON CHO CÁC MỤC BÊN DƯỚI */}
+          <Link to="/quan-ly-truc-ngay" className={`sidebar-item ${isActive('/quan-ly-truc-ngay')} ${highlightText('trực ngày') ? 'highlight' : ''}`}>
+            <span className="sidebar-icon">🛡️</span>
             <span className="sidebar-text">Quản lý trực ngày</span>
           </Link>
 
-          <Link to="/thong-bao" className={`sidebar-item ${isActive('/thong-bao')} ${highlightText('Thông Báo') ? 'highlight' : ''}`}>
-            <span className="sidebar-icon">🔔</span>
-            <span className="sidebar-text">Thông Báo</span>
-            <span className="notification-dot"></span>
+          <Link to="/quan-ly-xep-tkb" className={`sidebar-item ${isActive('/quan-ly-xep-tkb')} ${highlightText('tkb') || highlightText('thời khóa biểu') ? 'highlight' : ''}`}>
+            <span className="sidebar-icon">🗓️</span>
+            <span className="sidebar-text">Công tác xếp TKB</span>
           </Link>
+
+          <Link to="/cong-tac-ktra-cac-ky" className={`sidebar-item ${isActive('/cong-tac-ktra-cac-ky')} ${highlightText('công tác kiểm tra') || highlightText('các kỳ') ? 'highlight' : ''}`}>
+            <span className="sidebar-icon">✍️</span>
+            <span className="sidebar-text">Công tác kiểm tra các kỳ</span>
+          </Link>
+
+          <Link to="/quan-ly-ngay-nghi" className={`sidebar-item ${isActive('/quan-ly-ngay-nghi')} ${highlightText('ngày nghỉ') ? 'highlight' : ''}`}>
+            <span className="sidebar-icon">🌴</span>
+            <span className="sidebar-text">Quản lý ngày nghỉ</span>
+          </Link>
+
+          <Link to="/quan-ly-hoat-dong" className={`sidebar-item ${isActive('/quan-ly-hoat-dong')} ${highlightText('trọng điểm') || highlightText('hoạt động') ? 'highlight' : ''}`}>
+            <span className="sidebar-icon">🎯</span>
+            <span className="sidebar-text">Quản lý hoạt động trọng điểm</span>
+          </Link>
+
+          <Link to="/cong-tac-rut-kinh-nghiem" className={`sidebar-item ${isActive('/cong-tac-rut-kinh-nghiem')} ${highlightText('rút kinh nghiệm') || highlightText('kinh nghiệm') ? 'highlight' : ''}`}>
+            <span className="sidebar-icon">💡</span>
+            <span className="sidebar-text">Công tác rút kinh nghiệm</span>
+          </Link>
+
         </nav>
 
-        {/* NÚT ĐĂNG XUẤT ĐƯỢC ĐẨY XUỐNG DƯỚI CÙNG */}
+        {/* NÚT ĐĂNG XUẤT */}
         <div className="sidebar-footer" style={{ marginTop: 'auto', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '10px' }}>
           <button
             className="sidebar-item logout-btn"

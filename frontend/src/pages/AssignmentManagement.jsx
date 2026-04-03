@@ -4,7 +4,7 @@ import axiosClient from '../api/axiosClient';
 
 const AssignmentManagement = () => {
   const [assignments, setAssignments] = useState([]);
-  const [searchTerm, setSearchTerm] = useState(''); // Thêm State cho thanh tìm kiếm
+  const [searchTerm, setSearchTerm] = useState(''); 
   const [formData, setFormData] = useState({
     subject: '',
     lessonCount: '',
@@ -31,17 +31,16 @@ const AssignmentManagement = () => {
   // ==========================================
   const filteredAssignments = assignments.filter(item => {
     const searchLower = searchTerm.toLowerCase();
-    
+
     const subject = (item.subject || '').toLowerCase();
     const lessonCount = String(item.lessonCount || '').toLowerCase();
     const time = `tuần ${item.startWeek} - ${item.endWeek}`.toLowerCase();
     const notes = (item.notes || '').toLowerCase();
 
-    // Khớp 1 trong 4 trường dữ liệu thì giữ lại
-    return subject.includes(searchLower) || 
-           lessonCount.includes(searchLower) || 
-           time.includes(searchLower) || 
-           notes.includes(searchLower);
+    return subject.includes(searchLower) ||
+      lessonCount.includes(searchLower) ||
+      time.includes(searchLower) ||
+      notes.includes(searchLower);
   });
 
   const handleChange = (e) => {
@@ -99,7 +98,7 @@ const AssignmentManagement = () => {
   };
 
   // ==========================================
-  // XỬ LÝ XUẤT EXCEL (Đã sửa để xuất theo kết quả tìm kiếm)
+  // XỬ LÝ XUẤT EXCEL
   // ==========================================
   const exportToExcel = () => {
     if (filteredAssignments.length === 0) {
@@ -111,8 +110,8 @@ const AssignmentManagement = () => {
       "STT": index + 1,
       "Môn Học": item.subject,
       "Số Tiết": item.lessonCount,
-      "Tuần Bắt Đầu": item.startWeek, 
-      "Tuần Kết Thúc": item.endWeek,  
+      "Tuần Bắt Đầu": item.startWeek,
+      "Tuần Kết Thúc": item.endWeek,
       "Ghi Chú": item.notes || ""
     }));
 
@@ -135,22 +134,22 @@ const AssignmentManagement = () => {
       try {
         const data = new Uint8Array(event.target.result);
         const workbook = XLSX.read(data, { type: 'array' });
-        
+
         const firstSheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[firstSheetName];
-        
+
         const rawJsonData = XLSX.utils.sheet_to_json(worksheet);
 
         const formattedData = rawJsonData.map(row => ({
           subject: row['Môn Học'],
           lessonCount: row['Số Tiết'],
-          startWeek: row['Tuần Bắt Đầu'], 
+          startWeek: row['Tuần Bắt Đầu'],
           endWeek: row['Tuần Kết Thúc'],
           notes: row['Ghi Chú'] || ''
         }));
 
         const res = await axiosClient.post('/assignment-changes/import', formattedData);
-        
+
         if (res.data.success) {
           alert(`Tuyệt vời! ${res.data.message}`);
           fetchAssignments();
@@ -159,7 +158,7 @@ const AssignmentManagement = () => {
         console.error(error);
         alert('Có lỗi xảy ra khi đọc file. Vui lòng đảm bảo các cột đúng định dạng!');
       } finally {
-        e.target.value = null; 
+        e.target.value = null;
       }
     };
 
@@ -167,35 +166,36 @@ const AssignmentManagement = () => {
   };
 
   return (
-    <div className="p-8 max-w-full mx-auto font-sans bg-transparent">
+    <div className="p-4 md:p-8 max-w-full mx-auto font-sans bg-transparent">
 
-      {/* HEADER: Tiêu đề, Tìm kiếm và Nút bấm */}
-      <div className="flex flex-wrap justify-between items-center mb-6 gap-4">
-        <h2 className="text-[2rem] font-bold text-[#2563eb] whitespace-nowrap">
+      {/* HEADER: Responsive cho PC & Điện thoại */}
+      <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center mb-6 gap-4">
+        
+        <h2 className="text-2xl md:text-[2rem] font-bold text-[#2563eb] whitespace-nowrap">
           Quản lý Phân môn - Số tiết
         </h2>
-        
-        {/* THANH TÌM KIẾM Ở GIỮA */}
-        <div className="flex-1 max-w-lg mx-4">
+
+        {/* THANH TÌM KIẾM */}
+        <div className="w-full xl:flex-1 xl:max-w-lg xl:mx-4">
           <div className="relative group">
             <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400 group-focus-within:text-[#2563eb] transition-colors">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
             </span>
-            <input 
+            <input
               type="text"
               placeholder="Tìm theo môn học, số tiết, tuần hoặc ghi chú..."
-              className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm shadow-sm transition-all bg-white"
+              className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-full focus:outline-none focus:border-[#2563eb] text-sm shadow-sm transition-all bg-white"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
         </div>
 
-        {/* CỤM NÚT BẤM BÊN PHẢI */}
-        <div className="flex gap-3">
-          <label className="bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2 px-5 rounded shadow transition-colors flex items-center gap-2 text-sm cursor-pointer">
+        {/* CỤM NÚT BẤM */}
+        <div className="flex flex-wrap gap-3 w-full xl:w-auto">
+          <label className="flex-1 xl:flex-none justify-center bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2.5 px-5 rounded shadow transition-colors flex items-center gap-2 text-sm cursor-pointer border-none outline-none">
             <span className="text-lg leading-none">📥</span> Nhập Excel
             <input 
               type="file" 
@@ -207,32 +207,32 @@ const AssignmentManagement = () => {
 
           <button
             onClick={exportToExcel}
-            className="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-5 rounded shadow transition-colors flex items-center gap-2 text-sm"
+            className="flex-1 xl:flex-none justify-center bg-green-600 hover:bg-green-700 text-white font-medium py-2.5 px-5 rounded shadow transition-colors flex items-center gap-2 text-sm border-none outline-none"
           >
             <span className="text-lg leading-none">📊</span> Xuất Excel
           </button>
 
           <button
             onClick={handleOpenAdd}
-            className="bg-[#2453c9] hover:bg-blue-800 text-white font-medium py-2 px-5 rounded shadow transition-colors flex items-center gap-2 text-sm"
+            className="w-full sm:w-auto sm:flex-1 xl:flex-none justify-center bg-[#2453c9] hover:bg-blue-800 text-white font-medium py-2.5 px-5 rounded shadow transition-colors flex items-center gap-2 text-sm border-none outline-none"
           >
             <span className="text-lg leading-none">+</span> Thêm Phân Công
           </button>
         </div>
       </div>
 
-      {/* BẢNG DANH SÁCH */}
-      <div className="bg-white rounded-lg shadow border border-gray-200 overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="bg-[linear-gradient(135deg, #2563eb 0%, #1e40af 100%)] text-white">
-                <th className="px-6 py-3.5 text-base font-medium whitespace-nowrap">STT</th>
-                <th className="px-6 py-3.5 text-base font-medium whitespace-nowrap">Môn Học</th>
-                <th className="px-6 py-3.5 text-base font-medium whitespace-nowrap">Số Tiết</th>
-                <th className="px-6 py-3.5 text-base font-medium whitespace-nowrap">Thời Gian</th>
-                <th className="px-6 py-3.5 text-base font-medium whitespace-nowrap">Ghi Chú</th>
-                <th className="px-6 py-3.5 text-base font-medium whitespace-nowrap text-center">Thao Tác</th>
+      {/* BẢNG DANH SÁCH: Cố định h-[600px] và Sticky Header */}
+      <div className="bg-white rounded-lg shadow border border-gray-200 flex flex-col h-[600px] relative">
+        <div className="overflow-auto flex-1 relative">
+          <table className="w-full text-left border-collapse min-w-[800px]">
+            <thead className="sticky top-0 z-10 bg-[linear-gradient(135deg,#2563eb_0%,#1e40af_100%)] text-white shadow-md">
+              <tr>
+                <th className="px-6 py-4 text-base font-medium whitespace-nowrap">STT</th>
+                <th className="px-6 py-4 text-base font-medium whitespace-nowrap">Môn Học</th>
+                <th className="px-6 py-4 text-base font-medium whitespace-nowrap">Số Tiết</th>
+                <th className="px-6 py-4 text-base font-medium whitespace-nowrap">Thời Gian</th>
+                <th className="px-6 py-4 text-base font-medium whitespace-nowrap">Ghi Chú</th>
+                <th className="px-6 py-4 text-base font-medium whitespace-nowrap text-center">Thao Tác</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
@@ -264,7 +264,7 @@ const AssignmentManagement = () => {
                 ))
               ) : (
                 <tr>
-                  <td colSpan="6" className="px-6 py-10 text-center text-gray-500 italic text-sm">
+                  <td colSpan="6" className="px-6 py-20 text-center text-gray-500 italic text-sm">
                     {searchTerm ? 'Không tìm thấy kết quả phù hợp.' : 'Chưa có dữ liệu phân công.'}
                   </td>
                 </tr>
@@ -274,15 +274,15 @@ const AssignmentManagement = () => {
         </div>
       </div>
 
-      {/* MODAL POPUP FORM */}
+      {/* MODAL POPUP FORM (Đã làm mượt lại nút bấm) */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
           <div className="bg-white w-full max-w-2xl rounded-lg shadow-xl overflow-hidden animate-fade-in">
             <div className="bg-gray-50 px-6 py-4 border-b border-gray-200 flex justify-between items-center">
               <h3 className="text-lg font-medium text-[#2453c9]">
                 {editingId ? 'Chỉnh Sửa Phân Công' : 'Thêm Phân Công Mới'}
               </h3>
-              <button onClick={closeModal} className="text-gray-400 hover:text-red-500 text-2xl font-light leading-none">
+              <button onClick={closeModal} className="text-gray-400 hover:text-red-500 text-3xl font-light leading-none outline-none border-none">
                 &times;
               </button>
             </div>
@@ -331,13 +331,13 @@ const AssignmentManagement = () => {
               <div className="pt-4 mt-6 border-t border-gray-100 flex justify-end gap-3">
                 <button
                   type="button" onClick={closeModal}
-                  className="px-5 py-2 rounded border border-gray-300 bg-white text-gray-700 text-sm font-medium hover:bg-gray-50 transition-colors"
+                  className="px-5 py-2.5 rounded border border-gray-300 bg-white text-gray-700 text-sm font-medium hover:bg-gray-50 transition-colors outline-none"
                 >
                   Hủy Bỏ
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded bg-[#2453c9] text-white text-sm font-medium hover:bg-blue-800 transition-colors"
+                  className="px-5 py-2.5 rounded bg-[#2453c9] text-white text-sm font-medium hover:bg-blue-800 transition-colors outline-none border-none"
                 >
                   {editingId ? 'Lưu Cập Nhật' : 'Xác Nhận Thêm'}
                 </button>

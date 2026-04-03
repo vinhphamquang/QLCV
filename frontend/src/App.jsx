@@ -14,6 +14,11 @@ import Notifications from './pages/Notifications';
 import Auth from './components/Auth';
 import AssignmentManagement from './pages/AssignmentManagement';
 import DailyDuty from './pages/DailyDutyManagement';
+import TimetableManagement from './pages/TimetableManagement';
+import ExamCheckManagement from './pages/ExamCheckManagement';
+import HolidayManagement from './pages/HolidayManagement';
+import KeyActivityManagement from './pages/KeyActivityManagement';
+import LessonLearnedManagement from './pages/LessonLearnedManagement';
 // Tạm thời có thể bỏ import ProtectedRoute nếu dùng cách chặn vòng ngoài này
 // import ProtectedRoute from './components/ProtectedRoute'; 
 import './App.css';
@@ -67,6 +72,12 @@ function App() {
               <Route path="/thong-bao" element={<Notifications />} />
               <Route path="/phan-mon-so-tiet" element={<AssignmentManagement />} />
               <Route path="/quan-ly-truc-ngay" element={<DailyDuty />} />
+              <Route path="/quan-ly-xep-tkb" element={<TimetableManagement />} />
+              <Route path="/cong-tac-ktra-cac-ky" element={<ExamCheckManagement />} />
+              <Route path="/quan-ly-ngay-nghi" element={<HolidayManagement />} />
+              <Route path="/quan-ly-hoat-dong" element={<KeyActivityManagement />} />
+              <Route path="/cong-tac-rut-kinh-nghiem" element={<LessonLearnedManagement />} />
+
               
               {/* BẮT LỖI 404: Nếu gõ đường dẫn bậy, tự động văng về trang chủ */}
               <Route path="*" element={<Navigate to="/" replace />} />
