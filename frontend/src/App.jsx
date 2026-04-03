@@ -1,8 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+
+// --- IMPORT COMPONENTS ---
 import Sidebar from './components/Sidebar';
-import Topbar from './components/Topbar';
+import Header from './components/Header';
+import Auth from './components/Auth';
+
+// --- IMPORT PAGES ---
 import Home from './pages/Home';
+import Profile from './pages/Profile';
 import TeacherManagement from './pages/TeacherManagement';
 import InspectionManagement from './pages/InspectionManagement';
 import ExamPeriodInspection from './pages/ExamPeriodInspection';
@@ -11,21 +17,21 @@ import MonthlyTasks from './pages/MonthlyTasks';
 import Competitions from './pages/Competitions';
 import ExamPreparation from './pages/ExamPreparation';
 import Notifications from './pages/Notifications';
-import Auth from './components/Auth';
 import AssignmentManagement from './pages/AssignmentManagement';
 import DailyDuty from './pages/DailyDutyManagement';
 import TimetableManagement from './pages/TimetableManagement';
-import ExamCheckManagement from './pages/ExamCheckManagement';
 import HolidayManagement from './pages/HolidayManagement';
 import KeyActivityManagement from './pages/KeyActivityManagement';
 import LessonLearnedManagement from './pages/LessonLearnedManagement';
-// Tạm thời có thể bỏ import ProtectedRoute nếu dùng cách chặn vòng ngoài này
-// import ProtectedRoute from './components/ProtectedRoute'; 
+
 import './App.css';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loading, setLoading] = useState(true);
+  
+  // LOGIC RESPONSIVE: Trạng thái đóng/mở Sidebar trên Mobile
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -38,51 +44,81 @@ function App() {
   const handleLogout = () => {
     localStorage.removeItem('token');
     setIsLoggedIn(false);
+    setIsSidebarOpen(false); // Đóng sidebar khi logout
   };
 
-  if (loading) return <div className="loading">Đang tải...</div>;
+  // Hàm điều khiển Sidebar
+  const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
+  const closeSidebar = () => setIsSidebarOpen(false);
 
-  // 1. CHẶN VÒNG NGOÀI: Nếu chưa đăng nhập, HIỂN THỊ MỖI TRANG AUTH
-  if (!isLoggedIn) {
+  if (loading) {
     return (
-      <Auth onLoginSuccess={() => setIsLoggedIn(true)} />
+      <div className="flex items-center justify-center h-screen bg-gray-50">
+        <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-500 border-t-transparent"></div>
+      </div>
     );
   }
 
-  // 2. ĐÃ ĐĂNG NHẬP: Hiển thị toàn bộ hệ thống quản lý
+  if (!isLoggedIn) {
+    return <Auth onLoginSuccess={() => setIsLoggedIn(true)} />;
+  }
+
   return (
     <Router>
-      <div className="App">
-        {/* Truyền handleLogout xuống Sidebar hoặc Topbar để làm nút Đăng xuất */}
-        <Sidebar onLogout={handleLogout} /> 
+      <div className="flex flex-col h-screen w-full bg-gray-50 font-sans overflow-hidden">
         
-        <div className="main-wrapper">
-          <Topbar onLogout={handleLogout} /> 
+        {/* 1. HEADER NẰM TRÊN CÙNG: Truyền hàm toggleSidebar vào */}
+        <Header onLogout={handleLogout} toggleSidebar={toggleSidebar} />
+        
+        {/* 2. KHU VỰC BÊN DƯỚI: Chứa Sidebar (Trái) và Nội dung (Phải) */}
+        <div className="flex flex-1 overflow-hidden relative">
           
-          <main className="main-content">
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/quan-ly-giao-vien" element={<TeacherManagement />} />
-              <Route path="/kiem-tra-noi-bo" element={<InspectionManagement />} />
-              <Route path="/kiem-tra-cac-ky" element={<ExamPeriodInspection />} />
-              <Route path="/cong-viec-tuan" element={<WeeklyTasks />} />
-              <Route path="/cong-viec-thang" element={<MonthlyTasks />} />
-              <Route path="/hoi-thi" element={<Competitions />} />
-              <Route path="/ra-de-kiem-tra" element={<ExamPreparation />} />
-              <Route path="/thong-bao" element={<Notifications />} />
-              <Route path="/phan-mon-so-tiet" element={<AssignmentManagement />} />
-              <Route path="/quan-ly-truc-ngay" element={<DailyDuty />} />
-              <Route path="/quan-ly-xep-tkb" element={<TimetableManagement />} />
-              <Route path="/cong-tac-ktra-cac-ky" element={<ExamCheckManagement />} />
-              <Route path="/quan-ly-ngay-nghi" element={<HolidayManagement />} />
-              <Route path="/quan-ly-hoat-dong" element={<KeyActivityManagement />} />
-              <Route path="/cong-tac-rut-kinh-nghiem" element={<LessonLearnedManagement />} />
+          {/* SIDEBAR: Truyền trạng thái isOpen và hàm đóng vào */}
+          <Sidebar 
+            onLogout={handleLogout} 
+            isOpen={isSidebarOpen} 
+            closeSidebar={closeSidebar} 
+          /> 
+          
+          {/* LỚP PHỦ (OVERLAY): Chỉ hiện trên Mobile khi mở Sidebar */}
+          {isSidebarOpen && (
+            <div 
+              className="fixed inset-0 bg-black/40 z-[55] md:hidden backdrop-blur-[2px] transition-opacity duration-300"
+              onClick={closeSidebar}
+            ></div>
+          )}
+          
+          {/* NỘI DUNG CHÍNH */}
+          <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 p-4 md:p-6 lg:p-8">
+            
+            {/* CARD TRẮNG: Bọc lấy toàn bộ nội dung trang để tạo độ nổi khối */}
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-200/60 p-4 md:p-6 min-h-[calc(100vh-140px)]">
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/ho-so" element={<Profile />} />
+                
+                <Route path="/quan-ly-giao-vien" element={<TeacherManagement />} />
+                <Route path="/kiem-tra-noi-bo" element={<InspectionManagement />} />
+                <Route path="/kiem-tra-cac-ky" element={<ExamPeriodInspection />} />
+                <Route path="/cong-viec-tuan" element={<WeeklyTasks />} />
+                <Route path="/cong-viec-thang" element={<MonthlyTasks />} />
+                <Route path="/hoi-thi" element={<Competitions />} />
+                <Route path="/ra-de-kiem-tra" element={<ExamPreparation />} />
+                <Route path="/thong-bao" element={<Notifications />} />
+                <Route path="/phan-mon-so-tiet" element={<AssignmentManagement />} />
+                <Route path="/quan-ly-truc-ngay" element={<DailyDuty />} />
+                <Route path="/quan-ly-xep-tkb" element={<TimetableManagement />} />
+                <Route path="/quan-ly-ngay-nghi" element={<HolidayManagement />} />
+                <Route path="/quan-ly-hoat-dong" element={<KeyActivityManagement />} />
+                <Route path="/cong-tac-rut-kinh-nghiem" element={<LessonLearnedManagement />} />
 
-              
-              {/* BẮT LỖI 404: Nếu gõ đường dẫn bậy, tự động văng về trang chủ */}
-              <Route path="*" element={<Navigate to="/" replace />} />
-            </Routes>
+                {/* BẮT LỖI 404 */}
+                <Route path="*" element={<Navigate to="/" replace />} />
+              </Routes>
+            </div>
+            
           </main>
+          
         </div>
       </div>
     </Router>

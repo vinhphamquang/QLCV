@@ -126,19 +126,16 @@ const DailyDutyManagement = () => {
     };
 
     return (
-        <div className="p-4 md:p-8 max-w-full mx-auto font-sans bg-transparent">
-            {/* HEADER: Responsive cho cả Máy tính & Điện thoại */}
+        <div className="w-full h-full flex flex-col font-sans">
+            {/* HEADER */}
             <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center mb-6 gap-4">
-                
-                {/* Tiêu đề */}
                 <h2 className="text-2xl md:text-[2rem] font-bold text-[#2563eb] whitespace-nowrap">
                     Quản lý trực ngày
                 </h2>
 
-                {/* Thanh tìm kiếm: Cố định khoảng cách trên PC, Full width trên Mobile */}
                 <div className="w-full xl:flex-1 xl:max-w-lg xl:mx-4">
                     <div className="relative group">
-                        <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
+                        <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400 group-focus-within:text-[#2563eb]">
                             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                             </svg>
@@ -153,37 +150,33 @@ const DailyDutyManagement = () => {
                     </div>
                 </div>
 
-                {/* Cụm Nút bấm: Dàn ngang trên PC, bẻ dòng trên Mobile */}
                 <div className="flex flex-wrap gap-3 w-full xl:w-auto">
-                    <label className="flex-1 xl:flex-none justify-center bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2.5 px-5 rounded shadow cursor-pointer flex items-center gap-2 text-sm transition-colors border-none outline-none">
+                    <label className="flex-1 xl:flex-none justify-center bg-white border border-green-600 text-green-700 hover:bg-green-50 font-medium py-2.5 px-5 rounded shadow-sm cursor-pointer flex items-center gap-2 text-sm transition-colors">
                         <span className="text-lg">📥</span> Nhập Excel
                         <input type="file" accept=".xlsx, .xls" onChange={handleImportExcel} className="hidden" />
                     </label>
 
-                    <button onClick={exportToExcel} className="flex-1 xl:flex-none justify-center bg-green-600 hover:bg-green-700 text-white font-medium py-2.5 px-5 rounded shadow flex items-center gap-2 text-sm transition-colors border-none outline-none">
+                    <button onClick={exportToExcel} className="flex-1 xl:flex-none justify-center bg-white border border-green-600 text-green-700 hover:bg-green-50 font-medium py-2.5 px-5 rounded shadow-sm flex items-center gap-2 text-sm transition-colors">
                         <span className="text-lg">📊</span> Xuất Excel
                     </button>
 
-                    <button onClick={handleOpenAdd} className="w-full sm:w-auto sm:flex-1 xl:flex-none justify-center bg-[#2453c9] hover:bg-blue-800 text-white font-medium py-2.5 px-5 rounded shadow flex items-center gap-2 text-sm transition-colors border-none outline-none">
+                    <button onClick={handleOpenAdd} className="w-full sm:w-auto sm:flex-1 xl:flex-none justify-center bg-[#2453c9] hover:bg-blue-800 text-white font-medium py-2.5 px-5 rounded shadow flex items-center gap-2 text-sm transition-colors border-none">
                         <span className="text-lg">+</span> Thêm Nhật Ký
                     </button>
                 </div>
             </div>
 
-            {/* BẢNG DANH SÁCH: Kỹ thuật Scroll trong khung cố định */}
-            <div className="bg-white rounded-lg shadow border border-gray-200 flex flex-col h-[600px] relative"> 
-                {/* h-[600px] chính là thứ giúp trang web của ông không bao giờ bị giật chiều cao */}
-                
-                <div className="overflow-auto flex-1 relative">
+            {/* BẢNG DANH SÁCH */}
+            <div className="bg-white rounded-lg shadow border border-gray-200 flex flex-col relative flex-1 overflow-hidden"> 
+                <div className="overflow-auto relative">
                     <table className="w-full text-left border-collapse min-w-[800px]">
-                        {/* THẺ THEAD ĐƯỢC GHIM (STICKY) */}
-                        <thead className="sticky top-0 z-10 bg-[linear-gradient(135deg,#2563eb_0%,#1e40af_100%)] text-white shadow-md">
+                        <thead className="sticky top-0 z-10 bg-[#3b82f6] text-white shadow-sm">
                             <tr>
-                                <th className="px-6 py-4 text-base font-medium">STT</th>
-                                <th className="px-6 py-4 text-base font-medium whitespace-nowrap">Ngày Trực</th>
-                                <th className="px-6 py-4 text-base font-medium">Nội Dung Xét</th>
-                                <th className="px-6 py-4 text-base font-medium">Ghi Chú</th>
-                                <th className="px-6 py-4 text-base font-medium text-center whitespace-nowrap">Thao Tác</th>
+                                <th className="px-6 py-4 text-base font-semibold">STT</th>
+                                <th className="px-6 py-4 text-base font-semibold whitespace-nowrap">Ngày Trực</th>
+                                <th className="px-6 py-4 text-base font-semibold">Nội Dung Xét</th>
+                                <th className="px-6 py-4 text-base font-semibold">Ghi Chú</th>
+                                <th className="px-6 py-4 text-base font-semibold text-center whitespace-nowrap">Thao Tác</th>
                             </tr>
                         </thead>
                         
@@ -194,12 +187,12 @@ const DailyDutyManagement = () => {
                                     <td className="px-6 py-4 font-semibold text-blue-800 whitespace-nowrap">
                                         {new Date(item.dutyDate).toLocaleDateString('vi-VN')}
                                     </td>
-                                    <td className="px-6 py-4 text-base font-[450] text-[#0a0a0a] whitespace-pre-wrap">{item.evaluationContent}</td>
-                                    <td className="px-6 py-4 text-base font-[450] text-[#0a0a0a]">{item.notes}</td>
+                                    <td className="px-6 py-4 text-base font-[450] text-[#0a0a0a] whitespace-pre-wrap leading-relaxed">{item.evaluationContent}</td>
+                                    <td className="px-6 py-4 text-base font-[450] text-[#0a0a0a]">{item.notes || '-'}</td>
                                     <td className="px-6 py-4 text-center">
                                         <div className="flex justify-center gap-2">
-                                            <button onClick={() => handleEdit(item)} className="bg-amber-500 hover:bg-amber-600 text-white px-4 py-1.5 rounded text-sm font-medium border-none outline-none">Sửa</button>
-                                            <button onClick={() => handleDelete(item._id)} className="bg-red-500 hover:bg-red-600 text-white px-4 py-1.5 rounded text-sm font-medium border-none outline-none">Xóa</button>
+                                            <button onClick={() => handleEdit(item)} className="bg-amber-500 hover:bg-amber-600 text-white px-4 py-1.5 rounded text-sm font-medium border-none transition-colors">Sửa</button>
+                                            <button onClick={() => handleDelete(item._id)} className="bg-red-500 hover:bg-red-600 text-white px-4 py-1.5 rounded text-sm font-medium border-none transition-colors">Xóa</button>
                                         </div>
                                     </td>
                                 </tr>
@@ -215,15 +208,17 @@ const DailyDutyManagement = () => {
                 </div>
             </div>
 
-            {/* MODAL POPUP (Giữ nguyên) */}
+            {/* MODAL */}
             {isModalOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-                    <div className="bg-white w-full max-w-2xl rounded-lg shadow-xl overflow-hidden animate-fade-in">
+                    <div className="bg-white w-full max-w-2xl rounded-lg shadow-xl overflow-hidden">
                         <div className="bg-gray-50 px-6 py-4 border-b border-gray-200 flex justify-between items-center">
                             <h3 className="text-lg font-medium text-[#2453c9]">
                                 {editingId ? 'Chỉnh Sửa Nhật Ký' : 'Thêm Nhật Ký Mới'}
                             </h3>
-                            <button onClick={closeModal} className="text-gray-400 hover:text-red-500 text-3xl font-light leading-none">&times;</button>
+                            <button onClick={closeModal} className="text-gray-400 hover:text-red-500 text-3xl font-light outline-none border-none">
+                                &times;
+                            </button>
                         </div>
 
                         <form onSubmit={handleSubmit} className="p-6 space-y-4">
@@ -242,7 +237,7 @@ const DailyDutyManagement = () => {
 
                             <div className="pt-4 flex justify-end gap-3 mt-6">
                                 <button type="button" onClick={closeModal} className="px-5 py-2.5 border rounded hover:bg-gray-50 text-sm font-medium">Hủy bỏ</button>
-                                <button type="submit" className="px-5 py-2.5 bg-[#2453c9] text-white rounded hover:bg-blue-800 text-sm font-medium">{editingId ? 'Lưu thay đổi' : 'Xác nhận thêm'}</button>
+                                <button type="submit" className="px-5 py-2.5 bg-[#2453c9] text-white rounded hover:bg-blue-800 text-sm font-medium border-none transition-colors">{editingId ? 'Lưu thay đổi' : 'Xác nhận thêm'}</button>
                             </div>
                         </form>
                     </div>

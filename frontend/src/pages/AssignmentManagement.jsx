@@ -166,7 +166,7 @@ const AssignmentManagement = () => {
   };
 
   return (
-    <div className="p-4 md:p-8 max-w-full mx-auto font-sans bg-transparent">
+    <div className="w-full h-full flex flex-col font-sans">
 
       {/* HEADER: Responsive cho PC & Điện thoại */}
       <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center mb-6 gap-4">
@@ -193,9 +193,9 @@ const AssignmentManagement = () => {
           </div>
         </div>
 
-        {/* CỤM NÚT BẤM */}
+        {/* CỤM NÚT BẤM - Nút Excel được làm viền nhẹ lại */}
         <div className="flex flex-wrap gap-3 w-full xl:w-auto">
-          <label className="flex-1 xl:flex-none justify-center bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2.5 px-5 rounded shadow transition-colors flex items-center gap-2 text-sm cursor-pointer border-none outline-none">
+          <label className="flex-1 xl:flex-none justify-center bg-white border border-green-600 text-green-700 hover:bg-green-50 font-medium py-2.5 px-5 rounded shadow-sm transition-colors flex items-center gap-2 text-sm cursor-pointer outline-none">
             <span className="text-lg leading-none">📥</span> Nhập Excel
             <input 
               type="file" 
@@ -207,7 +207,7 @@ const AssignmentManagement = () => {
 
           <button
             onClick={exportToExcel}
-            className="flex-1 xl:flex-none justify-center bg-green-600 hover:bg-green-700 text-white font-medium py-2.5 px-5 rounded shadow transition-colors flex items-center gap-2 text-sm border-none outline-none"
+            className="flex-1 xl:flex-none justify-center bg-white border border-green-600 text-green-700 hover:bg-green-50 font-medium py-2.5 px-5 rounded shadow-sm transition-colors flex items-center gap-2 text-sm outline-none"
           >
             <span className="text-lg leading-none">📊</span> Xuất Excel
           </button>
@@ -221,18 +221,19 @@ const AssignmentManagement = () => {
         </div>
       </div>
 
-      {/* BẢNG DANH SÁCH: Cố định h-[600px] và Sticky Header */}
-      <div className="bg-white rounded-lg shadow border border-gray-200 flex flex-col h-[600px] relative">
-        <div className="overflow-auto flex-1 relative">
+      {/* BẢNG DANH SÁCH: Giữ nguyên form gốc, làm dịu màu nền xanh của Header */}
+      <div className="bg-white rounded-lg shadow border border-gray-200 flex flex-col relative flex-1">
+        <div className="overflow-auto relative">
           <table className="w-full text-left border-collapse min-w-[800px]">
-            <thead className="sticky top-0 z-10 bg-[linear-gradient(135deg,#2563eb_0%,#1e40af_100%)] text-white shadow-md">
+            {/* Màu nền xanh dương dịu mắt (bg-[#3b82f6]) và chữ trắng (text-white) */}
+            <thead className="sticky top-0 z-10 bg-[#3b82f6] text-white shadow-sm">
               <tr>
-                <th className="px-6 py-4 text-base font-medium whitespace-nowrap">STT</th>
-                <th className="px-6 py-4 text-base font-medium whitespace-nowrap">Môn Học</th>
-                <th className="px-6 py-4 text-base font-medium whitespace-nowrap">Số Tiết</th>
-                <th className="px-6 py-4 text-base font-medium whitespace-nowrap">Thời Gian</th>
-                <th className="px-6 py-4 text-base font-medium whitespace-nowrap">Ghi Chú</th>
-                <th className="px-6 py-4 text-base font-medium whitespace-nowrap text-center">Thao Tác</th>
+                <th className="px-6 py-4 text-base font-semibold whitespace-nowrap">STT</th>
+                <th className="px-6 py-4 text-base font-semibold whitespace-nowrap">Môn Học</th>
+                <th className="px-6 py-4 text-base font-semibold whitespace-nowrap">Số Tiết</th>
+                <th className="px-6 py-4 text-base font-semibold whitespace-nowrap">Thời Gian</th>
+                <th className="px-6 py-4 text-base font-semibold whitespace-nowrap">Ghi Chú</th>
+                <th className="px-6 py-4 text-base font-semibold whitespace-nowrap text-center">Thao Tác</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
@@ -243,9 +244,10 @@ const AssignmentManagement = () => {
                     <td className="px-6 py-4 text-base font-[450] text-[#0a0a0a]">{item.subject}</td>
                     <td className="px-6 py-4 text-base font-[450] text-[#0a0a0a]">{item.lessonCount}</td>
                     <td className="px-6 py-4 text-base font-[450] text-[#0a0a0a]">Tuần {item.startWeek} - {item.endWeek}</td>
-                    <td className="px-6 py-4 text-base font-[450] text-[#0a0a0a] whitespace-pre-wrap">{item.notes || ''}</td>
+                    <td className="px-6 py-4 text-base font-[450] text-[#0a0a0a] whitespace-pre-wrap">{item.notes || '-'}</td>
                     <td className="px-6 py-4 text-center">
                       <div className="flex justify-center gap-2">
+                        {/* Giữ nguyên nút màu Cam - Đỏ của bạn */}
                         <button
                           onClick={() => handleEdit(item)}
                           className="bg-amber-500 hover:bg-amber-600 text-white px-4 py-1.5 rounded text-sm font-medium transition-colors border-none outline-none"
@@ -274,7 +276,7 @@ const AssignmentManagement = () => {
         </div>
       </div>
 
-      {/* MODAL POPUP FORM (Đã làm mượt lại nút bấm) */}
+      {/* MODAL POPUP FORM - Trả về nguyên bản */}
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
           <div className="bg-white w-full max-w-2xl rounded-lg shadow-xl overflow-hidden animate-fade-in">
@@ -300,21 +302,21 @@ const AssignmentManagement = () => {
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1.5">Số tiết</label>
                   <input
-                    name="lessonCount" type="number" value={formData.lessonCount} onChange={handleChange} required
+                    name="lessonCount" type="number" value={formData.lessonCount} onChange={handleChange} required min="1"
                     className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-[#2453c9] focus:ring-1 focus:ring-[#2453c9] transition-colors"
                   />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1.5">Tuần bắt đầu</label>
                   <input
-                    name="startWeek" type="number" value={formData.startWeek} onChange={handleChange} required
+                    name="startWeek" type="number" value={formData.startWeek} onChange={handleChange} required min="1"
                     className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-[#2453c9] focus:ring-1 focus:ring-[#2453c9] transition-colors"
                   />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1.5">Tuần kết thúc</label>
                   <input
-                    name="endWeek" type="number" value={formData.endWeek} onChange={handleChange} required
+                    name="endWeek" type="number" value={formData.endWeek} onChange={handleChange} required min="1"
                     className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:border-[#2453c9] focus:ring-1 focus:ring-[#2453c9] transition-colors"
                   />
                 </div>

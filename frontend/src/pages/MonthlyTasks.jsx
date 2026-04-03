@@ -92,6 +92,16 @@ function MonthlyTasks() {
     });
   };
 
+  const filteredTasks = tasks.filter(item => {
+    const searchLower = searchTerm.toLowerCase();
+    return (
+      (item.tuan || '').toLowerCase().includes(searchLower) ||
+      (item.thu || '').toLowerCase().includes(searchLower) ||
+      (item.noiDung || '').toLowerCase().includes(searchLower) ||
+      (item.giaoViec || '').toLowerCase().includes(searchLower) ||
+      (item.ghiChu || '').toLowerCase().includes(searchLower)
+    );
+  });
   // Group tasks by week
   const groupedTasks = filteredTasks.reduce((acc, task) => {
     if (!acc[task.tuan]) {
@@ -135,16 +145,7 @@ function MonthlyTasks() {
     }
   };
 
-  const filteredTasks = tasks.filter(item => {
-    const searchLower = searchTerm.toLowerCase();
-    return (
-      (item.tuan || '').toLowerCase().includes(searchLower) ||
-      (item.thu || '').toLowerCase().includes(searchLower) ||
-      (item.noiDung || '').toLowerCase().includes(searchLower) ||
-      (item.giaoViec || '').toLowerCase().includes(searchLower) ||
-      (item.ghiChu || '').toLowerCase().includes(searchLower)
-    );
-  });
+
 
   return (
     <div className="monthly-tasks">
@@ -188,7 +189,7 @@ function MonthlyTasks() {
                 <label>Tuần *</label>
                 <select
                   value={formData.tuan}
-                  onChange={(e) => setFormData({...formData, tuan: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, tuan: e.target.value })}
                   required
                 >
                   <option value="">Chọn tuần</option>
@@ -204,7 +205,7 @@ function MonthlyTasks() {
                 <label>Thứ *</label>
                 <select
                   value={formData.thu}
-                  onChange={(e) => setFormData({...formData, thu: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, thu: e.target.value })}
                   required
                 >
                   <option value="">Chọn thứ</option>
@@ -223,7 +224,7 @@ function MonthlyTasks() {
               <label>Nội Dung *</label>
               <textarea
                 value={formData.noiDung}
-                onChange={(e) => setFormData({...formData, noiDung: e.target.value})}
+                onChange={(e) => setFormData({ ...formData, noiDung: e.target.value })}
                 rows="3"
                 placeholder="Mô tả nội dung công việc..."
                 required
@@ -236,7 +237,7 @@ function MonthlyTasks() {
                 <input
                   type="datetime-local"
                   value={formData.thoiGian}
-                  onChange={(e) => setFormData({...formData, thoiGian: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, thoiGian: e.target.value })}
                   required
                 />
               </div>
@@ -246,7 +247,7 @@ function MonthlyTasks() {
                 <input
                   type="text"
                   value={formData.giaoViec}
-                  onChange={(e) => setFormData({...formData, giaoViec: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, giaoViec: e.target.value })}
                   placeholder="Người được giao việc..."
                   required
                 />
@@ -257,7 +258,7 @@ function MonthlyTasks() {
               <label>Ghi Chú</label>
               <textarea
                 value={formData.ghiChu}
-                onChange={(e) => setFormData({...formData, ghiChu: e.target.value})}
+                onChange={(e) => setFormData({ ...formData, ghiChu: e.target.value })}
                 rows="2"
                 placeholder="Ghi chú thêm..."
               />
@@ -314,7 +315,7 @@ function MonthlyTasks() {
             </div>
           )
         ))}
-        
+
         {filteredTasks.length === 0 && (
           <p className="no-data">{searchTerm ? 'Không tìm thấy kết quả' : 'Chưa có công việc nào trong tháng'}</p>
         )}
